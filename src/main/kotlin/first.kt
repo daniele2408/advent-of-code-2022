@@ -4,6 +4,3 @@ fun getCaloriesTopNElves(n : Int) : Int {
     val listBags : List<List<Int>> = strings.map { it.split("\n").map { n -> n.toInt() } }.toList()
     return listBags.sortedBy { it.sum() }.reversed().take(n).flatten().sum()
 }
-
-fun getResourceAsText(path: String): String? =
-    object {}.javaClass.getResource(path)?.readText()
