@@ -1,7 +1,7 @@
 import model.MoveEnum
 import model.Outcome
-import model.neededMove
-import model.outcome
+import logic.neededMove
+import logic.outcome
 
 
 fun computeTotalScore() : Int {
@@ -28,6 +28,5 @@ fun computeTotalScore2() : Int {
 
 private fun retrieveRowsFromFile(): List<String> {
     val contentMatches = getResourceAsText("inputday2.txt")
-    val rows = contentMatches?.split("\n") ?: emptyList()
-    return rows
+    return contentMatches?.split("\n") ?: emptyList()
 }

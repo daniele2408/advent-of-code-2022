@@ -1,4 +1,7 @@
-package model
+package logic
+
+import model.MoveEnum
+import model.Outcome
 
 private val rules = mapOf(
     MoveEnum.ROCK to MoveEnum.SCISSOR,
