@@ -5,7 +5,7 @@ import logic.outcome
 
 
 fun computeTotalScore() : Int {
-    val rows = retrieveRowsFromFile()
+    val rows = retrieveRowsFromFile("inputday2.txt")
 
     return rows.map { it.split(" ") }.sumOf { (left, right) ->
         val myMove = MoveEnum.fromSymbol(right)
@@ -17,16 +17,11 @@ fun computeTotalScore() : Int {
 }
 
 fun computeTotalScore2() : Int {
-    val rows = retrieveRowsFromFile()
+    val rows = retrieveRowsFromFile("inputday2.txt")
 
     return rows.map { it.split(" ") }.sumOf { (left, right) ->
         val neededOutcome = Outcome.fromSymbol(right)
         val myMove = neededMove(MoveEnum.fromSymbol(left), neededOutcome)
         neededOutcome.score + (myMove?.score ?: 0)
     }
-}
-
-private fun retrieveRowsFromFile(): List<String> {
-    val contentMatches = getResourceAsText("inputday2.txt")
-    return contentMatches?.split("\n") ?: emptyList()
 }
