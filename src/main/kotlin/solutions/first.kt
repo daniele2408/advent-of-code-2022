@@ -1,3 +1,7 @@
+package solutions
+
+import getResourceAsText
+
 fun getCaloriesTopNElves(n : Int) : Int {
     val content = getResourceAsText("inputday1.txt")
     val strings : List<String> = content?.replace("\n\n", " ")?.split(" ") ?: emptyList()

@@ -1,3 +1,5 @@
+import solutions.*
+
 fun main(args: Array<String>) {
     println("############## DAY 1 ##############")
     println("The Elf carrying more calories is carrying ${getCaloriesTopNElves(1)} calories")

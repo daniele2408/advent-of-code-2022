@@ -1,7 +1,10 @@
+package solutions
+
 import model.MoveEnum
 import model.Outcome
 import logic.neededMove
 import logic.outcome
+import retrieveRowsFromFile
 
 
 fun computeTotalScore() : Int {

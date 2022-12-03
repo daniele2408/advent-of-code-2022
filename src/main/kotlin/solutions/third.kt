@@ -1,3 +1,7 @@
+package solutions
+
+import retrieveRowsFromFile
+
 val charPriorityMap = ((('a' .. 'z') + ('A' .. 'Z')) zip 1..52).associate { (char, prior) -> char to prior }
 
 fun sumPrioritiesItemsRucksack() : Int {
