@@ -13,4 +13,8 @@ fun main(args: Array<String>) {
     println("The sum of the priorities of shared item in rucksacks' compartment is ${sumPrioritiesItemsRucksack()}")
     println("The sum of the priorities of item type corresponding to each group's badge is ${sumPrioritiesItemsGroupOfThree()}")
 
+    println("############## DAY 4 ##############")
+    println("There are ${countTotallyOverlappingRanges()} tasks totally overlapping each other")
+    println("There are ${countPartiallyOverlappingRanges()} tasks partially overlapping each other")
+
 }
