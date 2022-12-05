@@ -1,3 +1,4 @@
+import model.CraneModel
 import solutions.*
 
 fun main(args: Array<String>) {
@@ -16,5 +17,9 @@ fun main(args: Array<String>) {
     println("############## DAY 4 ##############")
     println("There are ${countTotallyOverlappingRanges()} tasks totally overlapping each other")
     println("There are ${countPartiallyOverlappingRanges()} tasks partially overlapping each other")
+
+    println("############## DAY 5 ##############")
+    println("After instructions, following crates will end up on top ${getCratesOnTop(CraneModel.CRATE_MOVER_9000)} if using crane model ${CraneModel.CRATE_MOVER_9000}")
+    println("After instructions, following crates will end up on top ${getCratesOnTop(CraneModel.CRATE_MOVER_9001)} if using crane model ${CraneModel.CRATE_MOVER_9001}")
 
 }
