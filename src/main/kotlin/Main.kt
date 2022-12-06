@@ -1,4 +1,5 @@
 import model.CraneModel
+import model.ProtocolMarker
 import solutions.*
 
 fun main(args: Array<String>) {
@@ -22,4 +23,7 @@ fun main(args: Array<String>) {
     println("After instructions, following crates will end up on top ${getCratesOnTop(CraneModel.CRATE_MOVER_9000)} if using crane model ${CraneModel.CRATE_MOVER_9000}")
     println("After instructions, following crates will end up on top ${getCratesOnTop(CraneModel.CRATE_MOVER_9001)} if using crane model ${CraneModel.CRATE_MOVER_9001}")
 
+    println("############## DAY 6 ##############")
+    println("We have to process ${findMarkerPosition(ProtocolMarker.START_OF_PACKET)} character before the first start-of-packet marker is detected")
+    println("We have to process ${findMarkerPosition(ProtocolMarker.START_OF_MESSAGE)} character before the first start-of-message marker is detected")
 }
