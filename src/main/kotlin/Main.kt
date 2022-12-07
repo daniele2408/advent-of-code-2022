@@ -26,4 +26,9 @@ fun main(args: Array<String>) {
     println("############## DAY 6 ##############")
     println("We have to process ${findMarkerPosition(ProtocolMarker.START_OF_PACKET)} characters before the first start-of-packet marker is detected")
     println("We have to process ${findMarkerPosition(ProtocolMarker.START_OF_MESSAGE)} characters before the first start-of-message marker is detected")
+
+    println("############## DAY 7 ##############")
+    println("Sum of directories' size is ${getTotalSizeDirectories()}")
+    println("Size of smallest folder I'd have to free enough space is ${getSizeFolderToDelete()}")
+
 }
