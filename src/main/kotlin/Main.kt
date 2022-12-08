@@ -1,6 +1,18 @@
-import model.CraneModel
-import model.ProtocolMarker
-import solutions.*
+import solutions.day1caloriecounting.getCaloriesTopNElves
+import solutions.day2rockpaperscissor.computeTotalScore
+import solutions.day2rockpaperscissor.computeTotalScore2
+import solutions.day3rucksackorganization.sumPrioritiesItemsGroupOfThree
+import solutions.day3rucksackorganization.sumPrioritiesItemsRucksack
+import solutions.day4campcleanup.countPartiallyOverlappingRanges
+import solutions.day4campcleanup.countTotallyOverlappingRanges
+import solutions.day5supplystacks.getCratesOnTop
+import solutions.day5supplystacks.model.CraneModel
+import solutions.day6tuningtrouble.findMarkerPosition
+import solutions.day6tuningtrouble.model.ProtocolMarker
+import solutions.day7nospaceleftondevice.getSizeFolderToDelete
+import solutions.day7nospaceleftondevice.getTotalSizeDirectories
+import solutions.day8treetoptreehouse.countVisibleTrees
+import solutions.day8treetoptreehouse.findBestScenicScore
 
 fun main(args: Array<String>) {
     println("############## DAY 1 ##############")
@@ -30,5 +42,9 @@ fun main(args: Array<String>) {
     println("############## DAY 7 ##############")
     println("Sum of directories' size is ${getTotalSizeDirectories()}")
     println("Size of smallest folder I'd have to free enough space is ${getSizeFolderToDelete()}")
+
+    println("############## DAY 8 ##############")
+    println("There are ${countVisibleTrees()} visible trees from outside the grid")
+    println("The highest scenic score possible is ${findBestScenicScore()}")
 
 }
