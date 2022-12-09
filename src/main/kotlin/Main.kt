@@ -13,6 +13,8 @@ import solutions.day7nospaceleftondevice.getSizeFolderToDelete
 import solutions.day7nospaceleftondevice.getTotalSizeDirectories
 import solutions.day8treetoptreehouse.countVisibleTrees
 import solutions.day8treetoptreehouse.findBestScenicScore
+import solutions.day9ropebridge.totalPositionRopeTailVisited
+import solutions.day9ropebridge.totalPositionTailVisited
 
 fun main(args: Array<String>) {
     println("############## DAY 1 ##############")
@@ -46,5 +48,10 @@ fun main(args: Array<String>) {
     println("############## DAY 8 ##############")
     println("There are ${countVisibleTrees()} visible trees from outside the grid")
     println("The highest scenic score possible is ${findBestScenicScore()}")
+
+    println("############## DAY 9 ##############")
+    println("Tail of the rope visited ${totalPositionTailVisited()} positions at least once")
+    println("Tail of the rope having 9 knots visited ${totalPositionRopeTailVisited()} positions at least once")
+
 
 }
