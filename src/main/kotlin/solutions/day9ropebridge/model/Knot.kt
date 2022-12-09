@@ -26,8 +26,8 @@ data class Knot(val x: Int, val y: Int) {
     }
 
     fun planckPull(other: Knot) : Knot {
-        val pairDiff = this.diff(other)
-        return when (pairDiff) {
+        return when (val pairDiff = this.diff(other)) {
+            // todo would be nice to gather moves to do from difference w/o hardcoding like this
             0 to 0, 0 to 1, 0 to -1, 1 to 0, -1 to 0,
             1 to 1, -1 to -1, 1 to -1, -1 to 1 -> this.here()
 
