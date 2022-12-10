@@ -1,3 +1,5 @@
+import solutions.day10cathodraytube.printScreen
+import solutions.day10cathodraytube.sumSignals
 import solutions.day1caloriecounting.getCaloriesTopNElves
 import solutions.day2rockpaperscissor.computeTotalScore
 import solutions.day2rockpaperscissor.computeTotalScore2
@@ -52,6 +54,10 @@ fun main(args: Array<String>) {
     println("############## DAY 9 ##############")
     println("Tail of the rope visited ${totalPositionTailVisited()} positions at least once")
     println("Tail of the rope having 9 knots visited ${totalPositionRopeTailVisited()} positions at least once")
+
+    println("############## DAY 10 ##############")
+    println("Sum of these six signal strengths is ${sumSignals(listOf(20, 60, 100, 140, 180, 220))}")
+    println("CRT screen is showing following output:\n\n${printScreen(listOf(20, 60, 100, 140, 180, 220))}\n\n")
 
 
 }

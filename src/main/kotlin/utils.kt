@@ -7,7 +7,7 @@ fun retrieveRowsFromFile(filePath: String): List<String> {
 }
 
 // thanks to https://jivimberg.io/blog/2018/06/02/implementing-takewhileinclusive-in-kotlin/ !
-fun <T> Collection<T>.takeWhileInclusive(pred: (T) -> Boolean): Collection<T> {
+fun <T> List<T>.takeWhileInclusive(pred: (T) -> Boolean): List<T> {
     var shouldContinue = true
     return takeWhile {
         val result = shouldContinue
