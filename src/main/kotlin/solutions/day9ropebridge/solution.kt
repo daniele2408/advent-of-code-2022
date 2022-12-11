@@ -5,7 +5,7 @@ import solutions.day9ropebridge.logic.Navigator
 import solutions.day9ropebridge.logic.NavigatorMultiKnots
 
 fun totalPositionTailVisited() : Int {
-    val rows: List<String> = retrieveRowsFromFile("inputday9.txt")
+    val rows: List<String> = retrieveRowsFromFile("inputday09.txt")
 
     val navigator = Navigator.from(rows)
 
@@ -15,7 +15,7 @@ fun totalPositionTailVisited() : Int {
 }
 
 fun totalPositionRopeTailVisited() : Int {
-    val rows: List<String> = retrieveRowsFromFile("inputday9.txt")
+    val rows: List<String> = retrieveRowsFromFile("inputday09.txt")
 
     val navigator = NavigatorMultiKnots.from(10, rows)
 

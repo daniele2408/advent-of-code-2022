@@ -5,7 +5,7 @@ import solutions.day5supplystacks.model.CraneModel
 import retrieveRowsFromFile
 
 fun getCratesOnTop(craneModel: CraneModel): String {
-    val rows: List<String> = retrieveRowsFromFile("inputday5.txt")
+    val rows: List<String> = retrieveRowsFromFile("inputday05.txt")
 
     val inputCrates = rows.takeWhile { row -> row.isNotEmpty() }
     val inputMoves = rows.dropWhile { row -> !row.startsWith("move") }

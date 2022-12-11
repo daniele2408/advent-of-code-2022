@@ -1,5 +1,6 @@
 import solutions.day10cathodraytube.printScreen
 import solutions.day10cathodraytube.sumSignals
+import solutions.day11monkeyinthemiddle.levelOfMonkeyBusinessAfterNRounds
 import solutions.day1caloriecounting.getCaloriesTopNElves
 import solutions.day2rockpaperscissor.computeTotalScore
 import solutions.day2rockpaperscissor.computeTotalScore2
@@ -58,6 +59,9 @@ fun main(args: Array<String>) {
     println("############## DAY 10 ##############")
     println("Sum of these six signal strengths is ${sumSignals(listOf(20, 60, 100, 140, 180, 220))}")
     println("CRT screen is showing following output:\n\n${printScreen(listOf(20, 60, 100, 140, 180, 220))}\n\n")
+
+    println("############## DAY 11 ##############")
+    println("Monkey business level after 20 rounds is ${levelOfMonkeyBusinessAfterNRounds(20)}")
 
 
 }

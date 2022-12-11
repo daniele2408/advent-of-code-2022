@@ -5,6 +5,6 @@ import solutions.day6tuningtrouble.model.ProtocolMarker
 import retrieveRowsFromFile
 
 fun findMarkerPosition(markerType: ProtocolMarker): Int {
-    val message: String = retrieveRowsFromFile("inputday6.txt")[0]
+    val message: String = retrieveRowsFromFile("inputday06.txt")[0]
     return findStartOfPacketMarker(message, markerType.distinctCharacters)
 }

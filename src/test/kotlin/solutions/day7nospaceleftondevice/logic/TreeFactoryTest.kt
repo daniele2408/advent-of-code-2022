@@ -99,7 +99,7 @@ class TreeFactoryTest {
 
     @Test
     fun test3() {
-        val rows : List<String> = retrieveRowsFromFile("inputday7.txt")
+        val rows : List<String> = retrieveRowsFromFile("inputday07.txt")
 
         val treeObserver = TreeObserver()
         val tree : Folder = TreeFactory.parseLines(rows, treeObserver)

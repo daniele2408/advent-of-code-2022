@@ -8,7 +8,7 @@ import retrieveRowsFromFile
 
 
 fun computeTotalScore() : Int {
-    val rows = retrieveRowsFromFile("inputday2.txt")
+    val rows = retrieveRowsFromFile("inputday02.txt")
 
     return rows.map { it.split(" ") }.sumOf { (left, right) ->
         val myMove = MoveEnum.fromSymbol(right)
@@ -20,7 +20,7 @@ fun computeTotalScore() : Int {
 }
 
 fun computeTotalScore2() : Int {
-    val rows = retrieveRowsFromFile("inputday2.txt")
+    val rows = retrieveRowsFromFile("inputday02.txt")
 
     return rows.map { it.split(" ") }.sumOf { (left, right) ->
         val neededOutcome = Outcome.fromSymbol(right)

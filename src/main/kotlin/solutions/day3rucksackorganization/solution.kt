@@ -5,7 +5,7 @@ import retrieveRowsFromFile
 val charPriorityMap = ((('a' .. 'z') + ('A' .. 'Z')) zip 1..52).associate { (char, prior) -> char to prior }
 
 fun sumPrioritiesItemsRucksack() : Int {
-    val rows: List<String> = retrieveRowsFromFile("inputday3.txt")
+    val rows: List<String> = retrieveRowsFromFile("inputday03.txt")
 
     return rows.map { splitRowInListOfTwo(it) }
         .sumOf { charPriorityMap[findCommonLetter(it)] ?: 0 }
@@ -13,7 +13,7 @@ fun sumPrioritiesItemsRucksack() : Int {
 }
 
 fun sumPrioritiesItemsGroupOfThree() : Int {
-    val rowsChunked: List<List<String>> = retrieveRowsFromFile("inputday3.txt").chunked(3)
+    val rowsChunked: List<List<String>> = retrieveRowsFromFile("inputday03.txt").chunked(3)
 
     return rowsChunked.sumOf { charPriorityMap[findCommonLetter(it)] ?: 0 }
 

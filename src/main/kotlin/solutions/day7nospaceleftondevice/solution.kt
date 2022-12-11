@@ -6,7 +6,7 @@ import retrieveRowsFromFile
 
 fun getTotalSizeDirectories() : Int {
 
-    val rows : List<String> = retrieveRowsFromFile("inputday7.txt")
+    val rows : List<String> = retrieveRowsFromFile("inputday07.txt")
 
     val treeObserver = TreeObserver()
     TreeFactory.parseLines(rows, treeObserver)
@@ -18,7 +18,7 @@ fun getTotalSizeDirectories() : Int {
 
 fun getSizeFolderToDelete() : Int {
 
-    val rows : List<String> = retrieveRowsFromFile("inputday7.txt")
+    val rows : List<String> = retrieveRowsFromFile("inputday07.txt")
 
     val treeObserver = TreeObserver()
     val tree = TreeFactory.parseLines(rows, treeObserver)
