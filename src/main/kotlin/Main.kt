@@ -63,7 +63,7 @@ fun main(args: Array<String>) {
 
     println("############## DAY 11 ##############")
     println("Monkey business level after 20 rounds is ${levelOfMonkeyBusinessAfterNRounds(20)}")
-    println("Monkey business level after 1000 rounds is ${levelOfMonkeyBusinessAfterNRoundsHighStress(10000)}")
+    println("Monkey business level after 10000 rounds is ${levelOfMonkeyBusinessAfterNRoundsHighStress(10000)}")
 
 
 }

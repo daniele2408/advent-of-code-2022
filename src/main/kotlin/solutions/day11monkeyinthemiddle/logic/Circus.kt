@@ -6,19 +6,24 @@ import solutions.day11monkeyinthemiddle.model.ThrowPolicy
 import solutions.day11monkeyinthemiddle.model.WorryAction
 import java.math.BigInteger
 
-class Circus(val monkeys : List<Monkey>, private val highStress: Boolean) {
+class Circus(val monkeys : List<Monkey>, private val highStress: Boolean, private val verbose : Boolean = false) {
 
     private val lessStressItemSafe = WorryAction(WorryOperation.DIVIDE, 3)
+    private val lessStressItemSafe2 : (Long) -> Long = { a -> a % getN() }
+
+    private fun getN(): Long {
+        return monkeys.map { it.throwPolicy.testDivisible }.reduce { acc, l -> acc * l }
+    }
 
     private fun addItemToMonkey(pos : Int, item : BagItem) {
         return monkeys[pos].addItem(item)
     }
 
-    private val roundToPrint = (1 .. 10).toList() + listOf(20, 1000, 2000, 4000, 5000, 6000, 7000, 8000, 9000, 10000)
+    private val roundToPrint = listOf(1, 20, 1000, 2000, 4000, 5000, 6000, 7000, 8000, 9000, 10000)
 
     private fun printIfRound(ith : Int, msg : String) {
 
-        if (ith in roundToPrint) {
+        if (verbose && ith in roundToPrint) {
             print(msg)
         }
     }
@@ -32,13 +37,15 @@ class Circus(val monkeys : List<Monkey>, private val highStress: Boolean) {
                 (0 until monkey.items.size).forEach { _ ->
                     val item = monkey.throwItem()
                     if (item != null) {
-                        var worryLevel: Int = item.worryLevel
+                        var worryLevel: Long = item.worryLevel
                         printIfRound(ithRound, "Item as is ${item.worryLevel} ")
-                        worryLevel = monkey.makeWorry(worryLevel, highStress)
+                        worryLevel = monkey.makeWorry(worryLevel)
                         printIfRound(ithRound, "Item transformed $worryLevel ")
                         if (!highStress) {
                             worryLevel = lessStressItemSafe.applyTo(worryLevel)
                             printIfRound(ithRound, "Item div/3 less stress $worryLevel")
+                        } else {
+                            worryLevel = lessStressItemSafe2.invoke(worryLevel)
                         }
 
                         val nextMonkeyPos : Int = if (monkey.isDivisibleByMe(worryLevel)) {
@@ -71,9 +78,9 @@ class Circus(val monkeys : List<Monkey>, private val highStress: Boolean) {
         fun from(inputs : List<String>, highStress: Boolean) : Circus {
             val trimmedInputs = inputs.map { it.trimIndent() }
             val nMonkeys : Int = trimmedInputs.filter { it.startsWith("Monkey") }.maxOf { Regex("[0-9]+").find(it)?.value.toString().toInt() }
-            val listItems : List<List<Int>> = trimmedInputs.filter { it.startsWith("Starting items:") }.map { Regex("[0-9]+").findAll(it).map { e -> e.value.toInt() }.toList() }.toList()
+            val listItems : List<List<Long>> = trimmedInputs.filter { it.startsWith("Starting items:") }.map { Regex("[0-9]+").findAll(it).map { e -> e.value.toLong() }.toList() }.toList()
             val listOperations : List<String> = trimmedInputs.filter { it.startsWith("Operation:") }.map { Regex("new = old .*").find(it)?.value.toString().replace("new = ", "") }.toList()
-            val listTest : List<Int> = trimmedInputs.filter { it.startsWith("Test:") }.map { Regex("[0-9]+").find(it)?.value.toString().toInt() }.toList()
+            val listTest : List<Long> = trimmedInputs.filter { it.startsWith("Test:") }.map { Regex("[0-9]+").find(it)?.value.toString().toLong() }.toList()
             val listOutcomeTrue : List<Int> = trimmedInputs.filter { it.startsWith("If true:") }.map { Regex("[0-9]+").find(it)?.value.toString().toInt() }.toList()
             val listOutcomeFalse : List<Int> = trimmedInputs.filter { it.startsWith("If false:") }.map { Regex("[0-9]+").find(it)?.value.toString().toInt() }.toList()
 

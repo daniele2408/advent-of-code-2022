@@ -1,7 +1,4 @@
 package solutions.day11monkeyinthemiddle.model
 
 
-data class BagItem(var worryLevel : Int) {
-
-
-}
+data class BagItem(var worryLevel : Long)

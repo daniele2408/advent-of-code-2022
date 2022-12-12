@@ -10,29 +10,20 @@ data class Monkey(val items : MutableList<BagItem> = mutableListOf(), val worryA
         return items.removeFirst()
     }
 
-    fun makeWorry(currentWorryLevel: Int, filterStress: Boolean) : Int {
-        val (a, b) = if (filterStress) adaptStress(currentWorryLevel, throwPolicy.testDivisible) else currentWorryLevel to worryAction.argument
-        val stressLevelConstrained = worryAction.applyTo(a, b)
-//        val stressLevelFull = worryAction.applyTo(currentWorryLevel, worryAction.argument)
-        if (worryAction.applyTo(a, b) % throwPolicy.testDivisible != (worryAction.applyTo(currentWorryLevel, worryAction.argument) % throwPolicy.testDivisible)) {
-            println("$a e $b non sono modulo-invarianti-${throwPolicy.testDivisible} per $currentWorryLevel - ${worryAction.argument} con operazione ${worryAction.worryOperation}")
-        }
+    fun makeWorry(currentWorryLevel: Long) : Long {
+        val stressLevelConstrained = worryAction.applyTo(currentWorryLevel, worryAction.argument)
          return stressLevelConstrained
     }
 
-    private fun adaptStress(input : Int, testDivisible : Int) : Pair<Int, Int> {
-        return worryAction.worryOperation.invariantModuleTransform(input, worryAction.argument, testDivisible)
-    }
-
-    fun isDivisibleByMe(currentWorryLevel: Int) =
-        currentWorryLevel % throwPolicy.testDivisible == 0
+    fun isDivisibleByMe(currentWorryLevel: Long) =
+        currentWorryLevel % throwPolicy.testDivisible == 0L
 
     fun addItem(item: BagItem) {
         items.add(item)
     }
 
     override fun toString(): String {
-        return "Monkey(seen: $inspectCount x${items.size}[ ${ items.map { it.worryLevel }.joinToString(" ") } ])"
+        return "Monkey(seen: $inspectCount x${items.size}[ ${ items.map { it.worryLevel.toInt() }.joinToString(" ") } ])"
     }
 
     fun params() : String {
