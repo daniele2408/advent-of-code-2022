@@ -1,25 +1,26 @@
 package solutions.day11monkeyinthemiddle.model
 
 import solutions.day11monkeyinthemiddle.logic.WorryOperation
-import java.math.BigInteger
 
-class WorryAction(private val worryOperation: WorryOperation, private val argument : BigInteger) {
+class WorryAction(val worryOperation: WorryOperation, val argument : Int) {
 
-    constructor(worryOperation: WorryOperation, argument: Int) : this(worryOperation, BigInteger.valueOf(argument.toLong()))
-
-    fun applyTo(input : BigInteger) : BigInteger {
+    fun applyTo(input: Int) : Int {
         return worryOperation.invoke(input, argument)
     }
 
-    fun applyTo(input : Int) : BigInteger {
-        return worryOperation.invoke(BigInteger.valueOf(input.toLong()), argument)
+    fun applyTo(input: Int, newArgument : Int) : Int {
+        return worryOperation.invoke(input, newArgument)
+    }
+
+    override fun toString(): String {
+        return "Action(${worryOperation.symbol} ${if (worryOperation == WorryOperation.SQUARE) "" else argument})"
     }
 
     companion object {
 
         fun from(s: String) : WorryAction {
             val worryOperation = WorryOperation.from(s)
-            val argument = Regex("[0-9]+").find(s)?.value?.toBigInteger() ?: BigInteger.valueOf(0)
+            val argument = Regex("[0-9]+").find(s)?.value?.toInt() ?: 0
             return WorryAction(worryOperation, argument)
         }
     }

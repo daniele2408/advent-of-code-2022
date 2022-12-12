@@ -1,6 +1,7 @@
 import solutions.day10cathodraytube.printScreen
 import solutions.day10cathodraytube.sumSignals
 import solutions.day11monkeyinthemiddle.levelOfMonkeyBusinessAfterNRounds
+import solutions.day11monkeyinthemiddle.levelOfMonkeyBusinessAfterNRoundsHighStress
 import solutions.day1caloriecounting.getCaloriesTopNElves
 import solutions.day2rockpaperscissor.computeTotalScore
 import solutions.day2rockpaperscissor.computeTotalScore2
@@ -62,6 +63,7 @@ fun main(args: Array<String>) {
 
     println("############## DAY 11 ##############")
     println("Monkey business level after 20 rounds is ${levelOfMonkeyBusinessAfterNRounds(20)}")
+    println("Monkey business level after 1000 rounds is ${levelOfMonkeyBusinessAfterNRoundsHighStress(10000)}")
 
 
 }

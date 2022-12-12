@@ -1,10 +1,8 @@
 package solutions.day11monkeyinthemiddle.model
 
-import java.math.BigInteger
-
 data class Monkey(val items : MutableList<BagItem> = mutableListOf(), val worryAction: WorryAction, val throwPolicy: ThrowPolicy) {
 
-    var inspectCount : BigInteger = BigInteger.valueOf(0L)
+    var inspectCount : Int = 0
 
     fun throwItem() : BagItem? {
         if (items.isEmpty()) return null
@@ -12,21 +10,33 @@ data class Monkey(val items : MutableList<BagItem> = mutableListOf(), val worryA
         return items.removeFirst()
     }
 
-    fun makeWorry(currentWorryLevel: BigInteger) : BigInteger {
-        return worryAction.applyTo(currentWorryLevel)
+    fun makeWorry(currentWorryLevel: Int, filterStress: Boolean) : Int {
+        val (a, b) = if (filterStress) adaptStress(currentWorryLevel, throwPolicy.testDivisible) else currentWorryLevel to worryAction.argument
+        val stressLevelConstrained = worryAction.applyTo(a, b)
+//        val stressLevelFull = worryAction.applyTo(currentWorryLevel, worryAction.argument)
+        if (worryAction.applyTo(a, b) % throwPolicy.testDivisible != (worryAction.applyTo(currentWorryLevel, worryAction.argument) % throwPolicy.testDivisible)) {
+            println("$a e $b non sono modulo-invarianti-${throwPolicy.testDivisible} per $currentWorryLevel - ${worryAction.argument} con operazione ${worryAction.worryOperation}")
+        }
+         return stressLevelConstrained
     }
 
-    fun addressThrowTo(currentWorryLevel : BigInteger) : Int {
-        if (currentWorryLevel % throwPolicy.testDivisible == BigInteger.valueOf(0L)) return throwPolicy.outcomeTrue
-        return throwPolicy.outcomeFalse
+    private fun adaptStress(input : Int, testDivisible : Int) : Pair<Int, Int> {
+        return worryAction.worryOperation.invariantModuleTransform(input, worryAction.argument, testDivisible)
     }
+
+    fun isDivisibleByMe(currentWorryLevel: Int) =
+        currentWorryLevel % throwPolicy.testDivisible == 0
 
     fun addItem(item: BagItem) {
         items.add(item)
     }
 
     override fun toString(): String {
-        return "Monkey(seen: $inspectCount [ ${ items.map { it.worryLevel }.joinToString(" ") } ])"
+        return "Monkey(seen: $inspectCount x${items.size}[ ${ items.map { it.worryLevel }.joinToString(" ") } ])"
+    }
+
+    fun params() : String {
+        return "apply ${worryAction} then ${throwPolicy}"
     }
 
 

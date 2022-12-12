@@ -2,27 +2,26 @@ package solutions.day11monkeyinthemiddle
 
 import retrieveRowsFromFile
 import solutions.day11monkeyinthemiddle.logic.Circus
-import solutions.day11monkeyinthemiddle.logic.WorryOperation
-import solutions.day11monkeyinthemiddle.model.WorryAction
+import java.math.BigInteger
 
-fun levelOfMonkeyBusinessAfterNRounds(rounds : Int) : Int {
+fun levelOfMonkeyBusinessAfterNRounds(rounds : Int) : BigInteger {
 
     val rows = retrieveRowsFromFile("inputday11.txt")
 
-    val circus = Circus.from(rows, WorryAction(WorryOperation.DIVIDE, 3))
+    val circus = Circus.from(rows, false)
 
     circus.runRounds(rounds)
 
-    return circus.getMonkeyBusinessLevel().toInt()
+    return circus.getMonkeyBusinessLevel()
 }
 
-fun levelOfMonkeyBusinessAfterNRoundsButMoreWorried(rounds : Int) : Int {
+fun levelOfMonkeyBusinessAfterNRoundsHighStress(rounds : Int) : BigInteger {
 
     val rows = retrieveRowsFromFile("inputday11.txt")
 
-    val circus = Circus.from(rows, WorryAction(WorryOperation.PLUS, 0))
+    val circus = Circus.from(rows, true)
 
     circus.runRounds(rounds)
 
-    return circus.getMonkeyBusinessLevel().toInt()
+    return circus.getMonkeyBusinessLevel()
 }

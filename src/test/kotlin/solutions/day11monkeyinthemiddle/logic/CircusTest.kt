@@ -2,7 +2,6 @@ package solutions.day11monkeyinthemiddle.logic
 
 import org.junit.jupiter.api.Assertions.*
 import solutions.day11monkeyinthemiddle.model.BagItem
-import solutions.day11monkeyinthemiddle.model.WorryAction
 import java.math.BigInteger
 import kotlin.test.Test
 
@@ -37,13 +36,13 @@ class CircusTest {
 
     @Test
     fun testStaticFactoryMethod() {
-        val circus = Circus.from(sampleInputDay11.split('\n'), WorryAction(WorryOperation.DIVIDE, 3))
+        val circus = Circus.from(sampleInputDay11.split('\n'), false)
 
         assertEquals(4, circus.monkeys.size)
         assertEquals(2, circus.monkeys[0].items.size)
         assertEquals(BagItem(75), circus.monkeys[1].items[2])
-        assertEquals(9, circus.monkeys[2].worryAction.applyTo(3).toInt())
-        assertEquals(17, circus.monkeys[3].throwPolicy.testDivisible.toInt())
+        assertEquals(9, circus.monkeys[2].worryAction.applyTo(3))
+        assertEquals(17, circus.monkeys[3].throwPolicy.testDivisible)
         assertEquals(0, circus.monkeys[3].throwPolicy.outcomeTrue)
         assertEquals(1, circus.monkeys[3].throwPolicy.outcomeFalse)
 
@@ -53,19 +52,19 @@ class CircusTest {
     fun test20NoWorry() {
         val circus = Circus.from(
             sampleInputDay11.split('\n'),
-            WorryAction(WorryOperation.DIVIDE, 3)
+            false
         )
 
         circus.runRounds(20)
 
-        assertEquals(BigInteger.valueOf(10605), circus.getMonkeyBusinessLevel())
+        assertEquals( BigInteger.valueOf(10605), circus.getMonkeyBusinessLevel())
     }
 
     @Test
-    fun test1000YesWorry() {
+    fun test10000YesWorry() {
         val circus = Circus.from(
             sampleInputDay11.split('\n'),
-            WorryAction(WorryOperation.PLUS, 0)
+            true
         )
 
         circus.runRounds(10000)
