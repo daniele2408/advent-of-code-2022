@@ -1,6 +1,7 @@
 package solutions.day12hillclimbingalgorithm.model
 
 import solutions.day12hillclimbingalgorithm.logic.HeatMap
+import kotlin.math.abs
 
 data class Coord(val x : Int, val y : Int, val h : Int) {
 
@@ -17,12 +18,32 @@ data class Coord(val x : Int, val y : Int, val h : Int) {
         return this.x == x && this.y == y
     }
 
+    fun distance(coord: Coord) : Int {
+        return getXDistance(coord) + getYDistance(coord)
+    }
+
     fun canAccess(coord: Coord) : Boolean {
-        return coord.h - this.h in (0..1)
+        return (coord.h - this.h) <= 1
     }
 
     fun isAt(coord: Coord) : Boolean {
         return this.x == coord.x && this.y == coord.y
+    }
+
+    fun getXDistance(coord: Coord) : Int {
+        return abs(coord.x - this.x)
+    }
+
+    fun getYDistance(coord: Coord) : Int {
+        return abs(coord.y - this.y)
+    }
+
+    fun getZDistance(coord: Coord) : Int {
+        return coord.h - this.h
+    }
+
+    fun isInRange(coord: Coord, maxDistance : Int) : Boolean {
+        return getXDistance(coord) < maxDistance && getYDistance(coord) < maxDistance
     }
 
 }

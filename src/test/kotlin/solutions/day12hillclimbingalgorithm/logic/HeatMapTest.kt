@@ -7,7 +7,7 @@ import kotlin.test.fail
 class HeatMapTest {
 
     val sampleInput: String = """
-        aabqponm
+        Sabqponm
         abcryxxl
         accszExk
         acctuvwj

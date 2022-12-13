@@ -7,7 +7,8 @@ import solutions.day12hillclimbingalgorithm.model.WalkingLog
 import solutions.day12hillclimbingalgorithm.model.WalkingLogEntry
 import kotlin.math.abs
 
-val charValueMap : Map<Char, Int> = ('a'..'z').mapIndexed { index, c -> c to index }.toMap() + ('E' to 25) + ('S' to 0)
+val charValueMap : Map<Char, Int> = ('a'..'z').mapIndexed { index, c -> c to index }.toMap() + ('E' to 26) + ('S' to -1) // OCCHIO CHE CAMBIO PER PRINT
+val valueCharMap : Map<Int, Char> = charValueMap.map { (k,v) -> v to k }.toMap()
 
 class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: Coord) {
 
@@ -37,13 +38,20 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
         return walkingLog.getLastEntry().direction
     }
 
+    /*
+    idee: fare simulazioni ricorsivamente concatenando walk e scegliere quello più corto
+    oppure farlo tornare a un certo incrocio e non l'ultimo
+     */
 
     fun getRankedOrder() : List<WalkDirection> {
-        return when {
-            abs(getDeltaX().toLong()) >= abs(getDeltaY().toLong()) -> if (getDeltaX() > 0) listOf(LEFT, RIGHT, UP, DOWN) else listOf(RIGHT, LEFT, UP, DOWN)
-            abs(getDeltaX().toLong()) < abs(getDeltaY().toLong()) -> if (getDeltaY() > 0) listOf(UP, DOWN, LEFT, RIGHT) else listOf(DOWN, UP, LEFT, RIGHT)
-            else -> throw RuntimeException("Caso non coperto di DeltaX e DeltaY")
-        }
+//        return WalkDirection.values().filter { !amIOnMarginFor(it) }.sortedBy { currentPosition.walk(it, this).distance(target) }
+        return WalkDirection.values().filter { !amIOnMarginFor(it) }
+            .sortedWith(compareBy<WalkDirection> { currentPosition.walk(it, this).distance(target) }.thenByDescending { currentPosition.getZDistance(currentPosition.walk(it, this)) })
+//        return when {
+//            abs(getDeltaX().toLong()) >= abs(getDeltaY().toLong()) -> if (getDeltaX() > 0) listOf(LEFT, RIGHT, UP, DOWN) else listOf(RIGHT, LEFT, UP, DOWN)
+//            abs(getDeltaX().toLong()) < abs(getDeltaY().toLong()) -> if (getDeltaY() > 0) listOf(UP, DOWN, LEFT, RIGHT) else listOf(DOWN, UP, LEFT, RIGHT)
+//            else -> throw RuntimeException("Caso non coperto di DeltaX e DeltaY")
+//        }
     }
 
     private fun getDeltaY() : Int = currentPosition.y - target.y
@@ -59,14 +67,23 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
         }
     }
 
+    var c : Int = 0
+
+    fun addC() {
+        c++
+    }
+
     fun pickDirection() {
+        addC()
         println(this)
-        println("========================================================================================================")
+
+        println("=================================================== MOSSA $c =====================================================")
         if (currentPosition.isAt(target)) return
         val possibleDirections: List<WalkDirection> = getLegalDirection()
 
         if (possibleDirections.isEmpty()) {
-//            println("Vicolo cieco, torno indietro")
+            println("Vicolo cieco, torno indietro")
+
             walkingLog.rollBackToLastCross()
             currentPosition = walkingLog.getLastEntry().coord
             pickDirection()
@@ -74,11 +91,16 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
         }
         if (possibleDirections.size > 1) walkingLog.setLastEntryAsCross()
 
-//        println("Ho ${possibleDirections.size} possibili direzioni")
+        val rankedOrder = getRankedOrder()
+        println("Al momento mi trovo su ${currentPosition}")
+        println("Le mie preferenze sono $rankedOrder")
+        println("Ho ${possibleDirections.size} possibili direzioni ($possibleDirections)")
 
-        val nextPos = possibleDirections.map { currentPosition.walk(it, this) to it }.sortedBy { it.first.h }.reversed()
-            .first { it.first.h - currentPosition.h in (0..1) }.second
-//        println("Cammino verso $nextPos")
+        val nextPos = rankedOrder.first { it in possibleDirections }
+
+//        val nextPos = possibleDirections.map { currentPosition.walk(it, this) to it }.sortedBy { it.first.h }.reversed()
+//            .first { it.first.h - currentPosition.h in (0..1) }.second
+        println("Cammino verso $nextPos, sento sia la strada migliore")
         doOneStep(nextPos)
         pickDirection()
 
@@ -102,6 +124,7 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
             coord.isAt(currentPosition) -> "H"
             coord.isAt(target) -> "T"
             walkingLog.isCoordInLog(coord) -> walkingLog.printCoord(coord)
+            currentPosition.isInRange(coord, 5) -> valueCharMap[coord.h]?.toString() ?: "#"
             else -> "."
         }
     }
