@@ -7,8 +7,8 @@ import solutions.day12hillclimbingalgorithm.model.WalkingLog
 import solutions.day12hillclimbingalgorithm.model.WalkingLogEntry
 import kotlin.math.abs
 
-val charValueMap : Map<Char, Int> = ('a'..'z').mapIndexed { index, c -> c to index }.toMap() + ('E' to 26) + ('S' to -1) // OCCHIO CHE CAMBIO PER PRINT
-val valueCharMap : Map<Int, Char> = charValueMap.map { (k,v) -> v to k }.toMap()
+val charValueMap : Map<Char, Int> = ('a'..'z').mapIndexed { index, c -> c to index }.toMap() + ('E' to 25) + ('S' to 0) // OCCHIO CHE CAMBIO PER PRINT
+val valueCharMap : Map<Int, Char> = charValueMap.filter { it.key !in setOf('E', 'S') }.map { (k,v) -> v to k }.toMap()
 
 class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: Coord) {
 
@@ -46,7 +46,8 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
     fun getRankedOrder() : List<WalkDirection> {
 //        return WalkDirection.values().filter { !amIOnMarginFor(it) }.sortedBy { currentPosition.walk(it, this).distance(target) }
         return WalkDirection.values().filter { !amIOnMarginFor(it) }
-            .sortedWith(compareBy<WalkDirection> { currentPosition.walk(it, this).distance(target) }.thenByDescending { currentPosition.getZDistance(currentPosition.walk(it, this)) })
+//            .sortedWith(compareBy<WalkDirection> { currentPosition.walk(it, this).distance(target) }.thenByDescending { currentPosition.getZDistance(currentPosition.walk(it, this)) })
+            .sortedWith(compareByDescending<WalkDirection> { currentPosition.getZDistance(currentPosition.walk(it, this)) }.thenBy { currentPosition.walk(it, this).distance(target) })
 //        return when {
 //            abs(getDeltaX().toLong()) >= abs(getDeltaY().toLong()) -> if (getDeltaX() > 0) listOf(LEFT, RIGHT, UP, DOWN) else listOf(RIGHT, LEFT, UP, DOWN)
 //            abs(getDeltaX().toLong()) < abs(getDeltaY().toLong()) -> if (getDeltaY() > 0) listOf(UP, DOWN, LEFT, RIGHT) else listOf(DOWN, UP, LEFT, RIGHT)
