@@ -1,8 +1,8 @@
 package solutions.day12hillclimbingalgorithm.logic
 
 import org.junit.jupiter.api.Assertions.*
+import retrieveRowsFromFile
 import kotlin.test.Test
-import kotlin.test.fail
 
 class HeatMapTest {
 
@@ -52,9 +52,37 @@ class HeatMapTest {
         val rows = sampleInput.split("\n")
 
         val heatMap = HeatMap.from(rows)
-        heatMap.startWalking()
+        heatMap.startWalkingIntermediateStep()
 
         assertEquals(31, heatMap.getTotalSteps())
+    }
+
+    @Test
+    fun testWalkScanIter() {
+        val rows = sampleInput.split("\n")
+
+        val heatMap = HeatMap.from(rows)
+        heatMap.startWalkingIter()
+
+        assertEquals(31, heatMap.getTotalSteps())
+    }
+
+    @Test
+    fun testWalkScanIterReal() {
+        val rows = retrieveRowsFromFile("inputday12.txt")
+
+        val heatMap = HeatMap.from(rows)
+        heatMap.startWalkingIter()
+
+    }
+
+    @Test
+    fun testWalkScanReal() {
+        val rows = retrieveRowsFromFile("inputday12.txt")
+
+        val heatMap = HeatMap.from(rows)
+        heatMap.startWalkingIntermediateStep()
+
     }
 
 }

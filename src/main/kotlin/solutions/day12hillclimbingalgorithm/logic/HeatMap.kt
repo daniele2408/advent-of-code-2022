@@ -2,7 +2,6 @@ package solutions.day12hillclimbingalgorithm.logic
 
 import solutions.day12hillclimbingalgorithm.model.*
 import solutions.day12hillclimbingalgorithm.model.WalkDirection.*
-import kotlin.math.abs
 import kotlin.math.max
 
 val charValueMap : Map<Char, Int> = ('a'..'z').mapIndexed { index, c -> c to index }.toMap() + ('E' to 26) + ('S' to 0) // OCCHIO CHE CAMBIO PER PRINT
@@ -93,7 +92,6 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
 
     fun pickDirectionToward(coord: Coord) {
         addC()
-        println(this)
 
         println("=================================================== MOSSA $c =====================================================")
         if (currentPosition.isAt(coord)) {
@@ -112,7 +110,7 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
         if (possibleDirections.size > 1) walkingLog.setLastEntryAsCross()
 
         val rankedOrder = currentPosition.getRankedOrderRespectTo(coord, this)
-        println("Al momento mi trovo su ${currentPosition} e vorrei arrivare a $coord")
+        println("Al momento mi trovo su ${currentPosition} (altezza ${valueCharMap[currentPosition.h]}) e vorrei arrivare a $coord")
         println("Le mie preferenze sono $rankedOrder")
         println("Ho ${possibleDirections.size} possibili direzioni ($possibleDirections)")
 
@@ -120,6 +118,8 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
 
         println("Cammino verso $nextPos, sento sia la strada migliore per $coord")
         doOneStep(nextPos)
+        println(this)
+
     }
 
     fun pickDirectionIter() {
@@ -150,6 +150,18 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
         doOneStep(nextPos)
     }
 
+    fun haveIBeenHereAlready() : Pair<Coord, WalkDirection>? {
+        return values()
+            .filter { it != WalkDirection.getOpposite(walkingLog.getLastEntry().direction) && !amIOnMarginFor(it) }
+            .filter {
+                val stepToDirection = currentPosition.walk(it, this)
+                walkingLog.isAlreadySeen(stepToDirection) &&
+                        walkingLog.isCross(stepToDirection) &&
+                            currentPosition.getZDistance(stepToDirection) == 0
+            }
+            .map { currentPosition.walk(it, this) to it }.firstOrNull { currentPosition.getZDistance(it.first) in (0..1) }
+    }
+
     fun doOneStep(pickedDirection: WalkDirection) {
         currentPosition = currentPosition.walk(pickedDirection, this)
         walkingLog.addLog(WalkingLogEntry(pickedDirection, currentPosition))
@@ -157,11 +169,11 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
 
     fun startWalkingIter() {
         while (!currentPosition.isAt(target)) {
-            pickDirectionIter()
+            pickDirectionToward(target)
         }
     }
 
-    fun startWalking() {
+    fun startWalkingIntermediateStep() {
         while (!currentPosition.isAt(target)) {
             val (_, coordHigher) = scanGridSquare()
             currentTarget = coordHigher
@@ -178,12 +190,13 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
 
     private fun printPixelMap(coord: Coord) : String {
         return when {
-            coord.isAt(currentPosition) -> "O"
-            coord.isAt(target) -> "X"
-            coord in listTargets -> valueCharMap[coord.h]?.uppercase() ?: "."
+            coord.isAt(currentPosition) -> "§"
+            coord.isAt(target) -> "^"
+//            walkingLog.isCoordCross(coord) -> "+"
+            coord.isAt(currentTarget) || coord in listTargets -> valueCharMap[coord.h]?.uppercase() ?: "."
             walkingLog.isCoordInLog(coord) -> walkingLog.printCoord(coord)
             currentPosition.isInRange(coord, 5) -> valueCharMap[coord.h]?.toString() ?: "#"
-            else -> "."
+            else -> "." //valueCharMap[coord.h]?.toString() ?: "#"
         }
     }
     override fun toString(): String {

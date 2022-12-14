@@ -8,7 +8,7 @@ fun fewestStepRequired() : Int {
 
     val heatMap = HeatMap.from(rows)
 
-    heatMap.startWalking()
+    heatMap.startWalkingIntermediateStep()
 
     return heatMap.getTotalSteps()
 }

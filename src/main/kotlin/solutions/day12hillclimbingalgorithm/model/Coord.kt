@@ -44,7 +44,18 @@ data class Coord(val x : Int, val y : Int, val h : Int) {
 
     fun getRankedOrderRespectTo(coord: Coord, heatMap: HeatMap) : List<WalkDirection> {
         return WalkDirection.values().filter { !amIOnMarginFor(it, heatMap) }
-            .sortedWith(compareByDescending<WalkDirection> { getZDistance(walk(it, heatMap)) }.thenBy { walk(it, heatMap).distance(coord) })
+            .sortedWith(compareByDescending<WalkDirection> { getZDistance(walk(it, heatMap)) }
+                .thenBy {
+                    val xDistance = walk(it, heatMap).getXDistance(coord)
+                    val yDistance = walk(it, heatMap).getYDistance(coord)
+                    if (xDistance > yDistance) xDistance else yDistance
+                }.thenBy {
+                    val xDistance = walk(it, heatMap).getXDistance(coord)
+                    val yDistance = walk(it, heatMap).getYDistance(coord)
+                    if (xDistance <= yDistance) xDistance else yDistance
+                }
+
+            )
     }
 
     fun getLegalDirection(heatMap: HeatMap) : List<WalkDirection> {

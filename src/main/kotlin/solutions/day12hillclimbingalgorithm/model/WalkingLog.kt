@@ -32,6 +32,11 @@ class WalkingLog {
         return coord in alreadySeen
     }
 
+    fun isCross(coord: Coord) : Boolean {
+        val element : WalkingLogEntry? = logs.firstOrNull { it.coord == coord && it.isCross }
+        return element != null
+    }
+
     fun isEmpty(): Boolean {
         return logs.isEmpty()
     }
@@ -40,7 +45,12 @@ class WalkingLog {
         val lastCrossIndex = logs.indexOf(logs.findLast { it.isCross })
         logs.subList(lastCrossIndex, logs.lastIndex).forEach { alreadySeen.add(it.coord) }
         ((logs.size - 1) downTo lastCrossIndex).forEach { logs.removeLast() }
+    }
 
+    fun rollBackTo(coord: Coord) {
+        val squareOne = logs.indexOf(logs.findLast { it.coord == coord })
+        logs.subList(squareOne, logs.lastIndex).forEach { alreadySeen.add(it.coord) }
+        ((logs.size - 1) downTo squareOne).forEach { _ -> logs.removeLast() }
     }
 
     fun isCoordInLog(coord: Coord) : Boolean {
@@ -55,6 +65,10 @@ class WalkingLog {
 
     override fun toString(): String {
         return logs.map { "${it.direction.symbol} ${it.coord}" }.joinToString("\n")
+    }
+
+    fun isCoordCross(coord: Coord): Boolean {
+        return logs.any { it.coord == coord && it.isCross }
     }
 
 
