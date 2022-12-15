@@ -1,8 +1,8 @@
 package solutions.day12hillclimbingalgorithm.logic
 
 import solutions.day12hillclimbingalgorithm.model.*
-import solutions.day12hillclimbingalgorithm.model.WalkDirection.*
 import kotlin.math.max
+import kotlin.math.min
 
 val charValueMap : Map<Char, Int> = ('a'..'z').mapIndexed { index, c -> c to index }.toMap() + ('E' to 26) + ('S' to 0) // OCCHIO CHE CAMBIO PER PRINT
 val valueCharMap : Map<Int, Char> = charValueMap.filter { it.key !in setOf('E', 'S') }.map { (k,v) -> v to k }.toMap()
@@ -10,193 +10,61 @@ val valueCharMap : Map<Int, Char> = charValueMap.filter { it.key !in setOf('E', 
 class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: Coord) {
 
     var currentPosition : Coord = startPos
-    var currentTarget : Coord = target
-    val listTargets: MutableSet<Coord> = mutableSetOf()
     val walkingLog : WalkingLog = WalkingLog()
     val width : Int = grid[0].size - 1
     val height : Int = grid.size - 1
 
     init {
-        walkingLog.addLog(WalkingLogEntry(WalkDirection.DOWN, currentPosition, true))
+        grid[startPos.y][startPos.x].d = 0
+        walkingLog.setAsSeen(grid[startPos.y][startPos.x])
     }
 
     fun getCoord(x : Int, y : Int) : Coord {
         return grid[y][x]
     }
 
-    fun getLegalDirection() : List<WalkDirection> {
-        val lastDirection = getLastDirection() ?: throw RuntimeException("Last direction can't be null")
-        val legalDirections = WalkDirection.values().filter {
-            !amIOnMarginFor(it) && it != WalkDirection.getOpposite(lastDirection) && !walkingLog.isAlreadySeen(currentPosition.walk(it, this)) && currentPosition.canAccess(currentPosition.walk(it, this))
-        }.toList()
-        return legalDirections
+    fun getCoord(coord: Coord) : Coord {
+        return grid[coord.y][coord.x]
     }
 
-    fun getLastDirection() : WalkDirection? {
-        if (walkingLog.isEmpty()) return null
-        return walkingLog.getLastEntry().direction
-    }
 
-    /*
-    idee: scansionare l'area progressivamente e trovareil punto più vicino dove l'h +1 e +2 si toccano
-    vedere se raggiungibile
-    raggiungerlo
-     */
-
-    fun scanGridSquare(): Pair<Coord, Coord> {
-        var sideSlice = 0
-        var coupleStep : Pair<Coord, Coord>? = null
-        while (coupleStep == null) {
-            val scanGridSquare = currentPosition.scanGridSquare(sideSlice, this)
-            val subGrid = Grid(scanGridSquare, currentPosition)
-            println("Slicing grid ${subGrid.width}x${subGrid.heigth}:\n\n$subGrid\n\n")
-            coupleStep = subGrid.getAdjStepLessDistantFromTarget(this)
-            sideSlice++
-            if (sideSlice > max(width, height)) {
-                throw RuntimeException("sideSlice greater than map limits, it's looping forever")
-            }
+    fun djikstra() {
+        val neighbours = walkingLog.alreadySeen.map { it.getNeighbours(this) }.flatten()
+        if (neighbours.isEmpty()) return
+        (neighbours.indices).forEach { i ->
+            neighbours[i].d = min(neighbours[i].d, this.getCoord(currentPosition).d+1)
+            walkingLog.setAsSeen(neighbours[i])
         }
-        return coupleStep
+
+        currentPosition = neighbours.minBy { it.d }
+//        println(this)
+//        println("==================================================")
     }
 
-    fun getRankedOrder() : List<WalkDirection> {
-//        return WalkDirection.values().filter { !amIOnMarginFor(it) }.sortedBy { currentPosition.walk(it, this).distance(target) }
-        return WalkDirection.values().filter { !amIOnMarginFor(it) }
-//            .sortedWith(compareBy<WalkDirection> { currentPosition.walk(it, this).distance(target) }.thenByDescending { currentPosition.getZDistance(currentPosition.walk(it, this)) })
-            .sortedWith(compareByDescending<WalkDirection> { currentPosition.getZDistance(currentPosition.walk(it, this)) }.thenBy { currentPosition.walk(it, this).distance(target) })
-//        return when {
-//            abs(getDeltaX().toLong()) >= abs(getDeltaY().toLong()) -> if (getDeltaX() > 0) listOf(LEFT, RIGHT, UP, DOWN) else listOf(RIGHT, LEFT, UP, DOWN)
-//            abs(getDeltaX().toLong()) < abs(getDeltaY().toLong()) -> if (getDeltaY() > 0) listOf(UP, DOWN, LEFT, RIGHT) else listOf(DOWN, UP, LEFT, RIGHT)
-//            else -> throw RuntimeException("Caso non coperto di DeltaX e DeltaY")
-//        }
-    }
 
-    private fun getDeltaY() : Int = currentPosition.y - target.y
-
-    private fun getDeltaX() : Int = currentPosition.x - target.x
-
-    private fun amIOnMarginFor(direction: WalkDirection) : Boolean {
-        return when (direction) {
-            WalkDirection.UP -> currentPosition.y == 0
-            WalkDirection.DOWN -> currentPosition.y == height
-            WalkDirection.LEFT -> currentPosition.x == 0
-            WalkDirection.RIGHT -> currentPosition.x == width
+    fun startDjikstra() : Int {
+        while (!walkingLog.isAlreadySeen(target)) {
+            djikstra()
         }
+//        println(printDistanceHeatMap())
+//        println("Il target ha una distanza di ${grid[target.y][target.x].d} passi dall'inizio")
+        return grid[target.y][target.x].d
     }
 
-    var c : Int = 0
-
-    fun addC() {
-        c++
-    }
-
-    fun pickDirectionToward(coord: Coord) {
-        addC()
-
-        println("=================================================== MOSSA $c =====================================================")
-        if (currentPosition.isAt(coord)) {
-            println("Arrivato al target $coord")
-            return
-        }
-        val possibleDirections: List<WalkDirection> = getLegalDirection()
-
-        if (possibleDirections.isEmpty()) {
-            println("Vicolo cieco, torno indietro")
-
-            walkingLog.rollBackToLastCross()
-            currentPosition = walkingLog.getLastEntry().coord
-            return
-        }
-        if (possibleDirections.size > 1) walkingLog.setLastEntryAsCross()
-
-        val rankedOrder = currentPosition.getRankedOrderRespectTo(coord, this)
-        println("Al momento mi trovo su ${currentPosition} (altezza ${valueCharMap[currentPosition.h]}) e vorrei arrivare a $coord")
-        println("Le mie preferenze sono $rankedOrder")
-        println("Ho ${possibleDirections.size} possibili direzioni ($possibleDirections)")
-
-        val nextPos = rankedOrder.first { it in possibleDirections }
-
-        println("Cammino verso $nextPos, sento sia la strada migliore per $coord")
-        doOneStep(nextPos)
-        println(this)
-
-    }
-
-    fun pickDirectionIter() {
-        addC()
-        println(this)
-
-        println("=================================================== MOSSA $c =====================================================")
-        if (currentPosition.isAt(target)) return
-        val possibleDirections: List<WalkDirection> = getLegalDirection()
-
-        if (possibleDirections.isEmpty()) {
-            println("Vicolo cieco, torno indietro")
-
-            walkingLog.rollBackToLastCross()
-            currentPosition = walkingLog.getLastEntry().coord
-            return
-        }
-        if (possibleDirections.size > 1) walkingLog.setLastEntryAsCross()
-
-        val rankedOrder = getRankedOrder()
-        println("Al momento mi trovo su ${currentPosition}")
-        println("Le mie preferenze sono $rankedOrder")
-        println("Ho ${possibleDirections.size} possibili direzioni ($possibleDirections)")
-
-        val nextPos = rankedOrder.first { it in possibleDirections }
-
-        println("Cammino verso $nextPos, sento sia la strada migliore")
-        doOneStep(nextPos)
-    }
-
-    fun haveIBeenHereAlready() : Pair<Coord, WalkDirection>? {
-        return values()
-            .filter { it != WalkDirection.getOpposite(walkingLog.getLastEntry().direction) && !amIOnMarginFor(it) }
-            .filter {
-                val stepToDirection = currentPosition.walk(it, this)
-                walkingLog.isAlreadySeen(stepToDirection) &&
-                        walkingLog.isCross(stepToDirection) &&
-                            currentPosition.getZDistance(stepToDirection) == 0
-            }
-            .map { currentPosition.walk(it, this) to it }.firstOrNull { currentPosition.getZDistance(it.first) in (0..1) }
-    }
-
-    fun doOneStep(pickedDirection: WalkDirection) {
-        currentPosition = currentPosition.walk(pickedDirection, this)
-        walkingLog.addLog(WalkingLogEntry(pickedDirection, currentPosition))
-    }
-
-    fun startWalkingIter() {
-        while (!currentPosition.isAt(target)) {
-            pickDirectionToward(target)
-        }
-    }
-
-    fun startWalkingIntermediateStep() {
-        while (!currentPosition.isAt(target)) {
-            val (_, coordHigher) = scanGridSquare()
-            currentTarget = coordHigher
-            while (!currentPosition.isAt(coordHigher)) {
-                pickDirectionToward(coordHigher)
-            }
-            listTargets.add(coordHigher)
-        }
-    }
-
-    fun getTotalSteps() : Int {
-        return walkingLog.getTotalSteps()
+    fun printDistanceHeatMap() : String {
+        return grid.map {
+            it.map { coord -> val padding = 4
+                "${if (coord.d != Int.MAX_VALUE) (coord.d).toString().padStart(padding) else "∞".padStart(padding)} " }.joinToString("")
+        }.joinToString("\n")
     }
 
     private fun printPixelMap(coord: Coord) : String {
         return when {
             coord.isAt(currentPosition) -> "§"
             coord.isAt(target) -> "^"
-//            walkingLog.isCoordCross(coord) -> "+"
-            coord.isAt(currentTarget) || coord in listTargets -> valueCharMap[coord.h]?.uppercase() ?: "."
-            walkingLog.isCoordInLog(coord) -> walkingLog.printCoord(coord)
-            currentPosition.isInRange(coord, 5) -> valueCharMap[coord.h]?.toString() ?: "#"
-            else -> "." //valueCharMap[coord.h]?.toString() ?: "#"
+            walkingLog.isCoordInLogAndIsNotLast(coord) -> walkingLog.printCoord(coord)
+            walkingLog.isAlreadySeen(coord) -> "."
+            else -> valueCharMap[coord.h]?.toString() ?: "#"
         }
     }
     override fun toString(): String {
@@ -206,15 +74,6 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
         }.joinToString("\n")
 
     }
-
-    fun sliceGrid(upLeftCorner: Coord, bottomRightCorner: Coord): List<List<Coord>> {
-        return (upLeftCorner.y..bottomRightCorner.y).map { j ->
-            (upLeftCorner.x..bottomRightCorner.x).map { i ->
-                grid[j][i]
-            }.toList()
-        }.toList()
-    }
-
 
     companion object {
 

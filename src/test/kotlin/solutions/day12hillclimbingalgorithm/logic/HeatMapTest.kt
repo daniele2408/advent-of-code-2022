@@ -25,64 +25,26 @@ class HeatMapTest {
     }
 
     @Test
-    fun testWalk() {
+    fun testDjikstra() {
         val rows = sampleInput.split("\n")
 
         val heatMap = HeatMap.from(rows)
-        heatMap.startWalkingIter()
+        val steps = heatMap.startDjikstra()
 
-        assertEquals(31, heatMap.getTotalSteps())
-    }
-
-    @Test
-    fun testScan() {
-        val rows = sampleInput.split("\n")
-
-        val heatMap = HeatMap.from(rows)
-        print(heatMap)
-        while (heatMap.currentPosition.h != heatMap.target.h) {
-            val (coord, coordHigher) = heatMap.scanGridSquare()
-            heatMap.currentPosition = coordHigher
-        }
+        assertEquals(31, steps)
 
     }
 
     @Test
-    fun testWalkScan() {
-        val rows = sampleInput.split("\n")
-
-        val heatMap = HeatMap.from(rows)
-        heatMap.startWalkingIntermediateStep()
-
-        assertEquals(31, heatMap.getTotalSteps())
-    }
-
-    @Test
-    fun testWalkScanIter() {
-        val rows = sampleInput.split("\n")
-
-        val heatMap = HeatMap.from(rows)
-        heatMap.startWalkingIter()
-
-        assertEquals(31, heatMap.getTotalSteps())
-    }
-
-    @Test
-    fun testWalkScanIterReal() {
+    fun testDjikstraReal() {
         val rows = retrieveRowsFromFile("inputday12.txt")
 
         val heatMap = HeatMap.from(rows)
-        heatMap.startWalkingIter()
+        val steps = heatMap.startDjikstra()
+
+        assertEquals(380, steps)
 
     }
 
-    @Test
-    fun testWalkScanReal() {
-        val rows = retrieveRowsFromFile("inputday12.txt")
-
-        val heatMap = HeatMap.from(rows)
-        heatMap.startWalkingIntermediateStep()
-
-    }
 
 }

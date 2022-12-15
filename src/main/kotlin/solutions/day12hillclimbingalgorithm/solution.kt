@@ -8,7 +8,5 @@ fun fewestStepRequired() : Int {
 
     val heatMap = HeatMap.from(rows)
 
-    heatMap.startWalkingIntermediateStep()
-
-    return heatMap.getTotalSteps()
+    return heatMap.startDjikstra()
 }

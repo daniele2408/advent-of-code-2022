@@ -2,74 +2,28 @@ package solutions.day12hillclimbingalgorithm.model
 
 class WalkingLog {
     private val logs : MutableList<WalkingLogEntry> = mutableListOf()
-    private val alreadySeen : MutableSet<Coord> = mutableSetOf()
-    fun addLog(logEntry: WalkingLogEntry) {
-        logs.add(logEntry)
-        setLastEntryAsSeen()
-    }
+    val alreadySeen : MutableSet<Coord> = mutableSetOf()
 
-    fun getTotalSteps() : Int {
-        return logs.size - 1
-    }
-
-    fun removeLog() : WalkingLogEntry {
-        return logs.removeLast()
-    }
-
-    fun getLastEntry() : WalkingLogEntry {
-        return logs[logs.lastIndex]
-    }
-
-    fun setLastEntryAsCross() {
-        logs[logs.lastIndex].isCross = true
-    }
-
-    fun setLastEntryAsSeen() {
-        alreadySeen.add(logs[logs.lastIndex].coord)
+    fun setAsSeen(coord: Coord) {
+        alreadySeen.add(coord)
     }
 
     fun isAlreadySeen(coord: Coord) : Boolean {
-        return coord in alreadySeen
+        return alreadySeen.any { it.isAt(coord) }
     }
 
-    fun isCross(coord: Coord) : Boolean {
-        val element : WalkingLogEntry? = logs.firstOrNull { it.coord == coord && it.isCross }
-        return element != null
-    }
-
-    fun isEmpty(): Boolean {
-        return logs.isEmpty()
-    }
-
-    fun rollBackToLastCross() {
-        val lastCrossIndex = logs.indexOf(logs.findLast { it.isCross })
-        logs.subList(lastCrossIndex, logs.lastIndex).forEach { alreadySeen.add(it.coord) }
-        ((logs.size - 1) downTo lastCrossIndex).forEach { logs.removeLast() }
-    }
-
-    fun rollBackTo(coord: Coord) {
-        val squareOne = logs.indexOf(logs.findLast { it.coord == coord })
-        logs.subList(squareOne, logs.lastIndex).forEach { alreadySeen.add(it.coord) }
-        ((logs.size - 1) downTo squareOne).forEach { _ -> logs.removeLast() }
-    }
-
-    fun isCoordInLog(coord: Coord) : Boolean {
-        return logs.find { it.coord.isAt(coord) } != null
+    fun isCoordInLogAndIsNotLast(coord: Coord) : Boolean {
+        return logs.isNotEmpty() && logs.last().coord != coord && logs.find { it.coord.isAt(coord) } != null
     }
 
     fun printCoord(coord: Coord) : String {
         val pastStep: WalkingLogEntry = logs.find { it.coord.isAt(coord) }!!
-        return logs[logs.indexOf(pastStep) + 1].direction.symbol
+        return logs[logs.indexOf(pastStep)+1].direction.symbol
 
     }
 
     override fun toString(): String {
         return logs.map { "${it.direction.symbol} ${it.coord}" }.joinToString("\n")
     }
-
-    fun isCoordCross(coord: Coord): Boolean {
-        return logs.any { it.coord == coord && it.isCross }
-    }
-
 
 }
