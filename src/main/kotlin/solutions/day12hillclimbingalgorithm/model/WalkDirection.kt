@@ -6,15 +6,4 @@ enum class WalkDirection(val symbol : String) {
     LEFT("<"),
     RIGHT(">");
 
-    companion object {
-        fun getOpposite(opposite : WalkDirection) : WalkDirection {
-            return when (opposite) {
-                UP -> DOWN
-                DOWN -> UP
-                LEFT -> RIGHT
-                RIGHT -> LEFT
-            }
-        }
-    }
-
 }

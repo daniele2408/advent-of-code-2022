@@ -3,10 +3,13 @@ package solutions.day12hillclimbingalgorithm
 import retrieveRowsFromFile
 import solutions.day12hillclimbingalgorithm.logic.HeatMap
 
-fun fewestStepRequired() : Int {
+fun fewestStepRequiredFromNearestLowestPoint() : Pair<Int, Int> {
     val rows: List<String> = retrieveRowsFromFile("inputday12.txt")
 
-    val heatMap = HeatMap.from(rows)
+    val heatMap = HeatMap.create(rows)
+    val fewestStepsFromStart = heatMap.runDijkstra()
 
-    return heatMap.startDjikstra()
+    val fewestStepsFromNearestLowest = heatMap.inverseDijkstra()
+
+    return fewestStepsFromStart to fewestStepsFromNearestLowest
 }

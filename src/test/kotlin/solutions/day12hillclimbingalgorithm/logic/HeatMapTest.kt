@@ -1,7 +1,6 @@
 package solutions.day12hillclimbingalgorithm.logic
 
 import org.junit.jupiter.api.Assertions.*
-import retrieveRowsFromFile
 import kotlin.test.Test
 
 class HeatMapTest {
@@ -18,33 +17,36 @@ class HeatMapTest {
     fun testFrom() {
         val rows = sampleInput.split("\n")
 
-        val heatMap = HeatMap.from(rows)
+        val heatMap = HeatMap.create(rows)
 
         assertEquals(0, heatMap.getCoord(0, 0).h)
 
     }
 
     @Test
-    fun testDjikstra() {
+    fun testDijkstra() {
         val rows = sampleInput.split("\n")
 
-        val heatMap = HeatMap.from(rows)
-        val steps = heatMap.startDjikstra()
+        val heatMap = HeatMap.create(rows)
+        val stepsFromStart = heatMap.runDijkstra()
 
-        assertEquals(31, steps)
+        assertEquals(31, stepsFromStart)
+
 
     }
 
     @Test
-    fun testDjikstraReal() {
-        val rows = retrieveRowsFromFile("inputday12.txt")
+    fun testDijkstraPart2() {
+        val rows = sampleInput.split("\n")
 
-        val heatMap = HeatMap.from(rows)
-        val steps = heatMap.startDjikstra()
+        val heatMap = HeatMap.create(rows)
+        val stepsFromStart = heatMap.runDijkstra()
 
-        assertEquals(380, steps)
+        assertEquals(31, stepsFromStart)
+
+        val inversedijkstra = heatMap.inverseDijkstra()
+        assertEquals(29, inversedijkstra)
 
     }
-
 
 }

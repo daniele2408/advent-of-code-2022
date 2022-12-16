@@ -1,9 +1,6 @@
 package solutions.day12hillclimbingalgorithm.model
 
 import solutions.day12hillclimbingalgorithm.logic.HeatMap
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 
 data class Coord(val x : Int, val y : Int, val h : Int, var d : Int = Int.MAX_VALUE) {
 
@@ -29,14 +26,28 @@ data class Coord(val x : Int, val y : Int, val h : Int, var d : Int = Int.MAX_VA
         return this.x == coord.x && this.y == coord.y
     }
 
-    fun getZDistance(coord: Coord) : Int {
+    private fun getZDistance(coord: Coord) : Int {
         return coord.h - this.h
+    }
+
+    private fun canMove(direction: WalkDirection, heatMap: HeatMap) : Boolean {
+        return !amIOnMarginFor(direction, heatMap)
+    }
+
+    private fun shallIGoThere(direction: WalkDirection, heatMap: HeatMap) : Boolean {
+        return canMove(direction, heatMap) && ! heatMap.alreadyBeenThere(this, direction)
     }
 
     fun getNeighbours(heatMap: HeatMap) : List<Coord> {
         return WalkDirection.values()
-            .filter { !amIOnMarginFor(it, heatMap) && !heatMap.walkingLog.isAlreadySeen(this.walk(it, heatMap)) && this.getZDistance(this.walk(it, heatMap)) <= 1 }
-            .map { this.walk(it, heatMap) }
+            .filter { shallIGoThere(it, heatMap) && getZDistance(walk(it, heatMap)) <= 1 }
+            .map { walk(it, heatMap) }
+    }
+
+    fun getNeighboursInverse(heatMap: HeatMap) : List<Coord> {
+        return WalkDirection.values()
+            .filter { shallIGoThere(it, heatMap) && walk(it, heatMap).getZDistance(this) <= 1 }
+            .map { walk(it, heatMap) }
     }
 
 }

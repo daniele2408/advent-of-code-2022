@@ -1,7 +1,6 @@
 package solutions.day12hillclimbingalgorithm.logic
 
 import solutions.day12hillclimbingalgorithm.model.*
-import kotlin.math.max
 import kotlin.math.min
 
 val charValueMap : Map<Char, Int> = ('a'..'z').mapIndexed { index, c -> c to index }.toMap() + ('E' to 26) + ('S' to 0) // OCCHIO CHE CAMBIO PER PRINT
@@ -9,7 +8,7 @@ val valueCharMap : Map<Int, Char> = charValueMap.filter { it.key !in setOf('E', 
 
 class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: Coord) {
 
-    var currentPosition : Coord = startPos
+    private var currentPosition : Coord = startPos
     val walkingLog : WalkingLog = WalkingLog()
     val width : Int = grid[0].size - 1
     val height : Int = grid.size - 1
@@ -23,46 +22,81 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
         return grid[y][x]
     }
 
-    fun getCoord(coord: Coord) : Coord {
+    private fun getCoord(coord: Coord) : Coord {
         return grid[coord.y][coord.x]
     }
 
+    fun runDijkstra() : Int {
+        while (!walkingLog.isAlreadySeen(target)) {
+            dijkstra()
+        }
+        return grid[target.y][target.x].d
+    }
 
-    fun djikstra() {
+    private fun dijkstra() {
         val neighbours = walkingLog.alreadySeen.map { it.getNeighbours(this) }.flatten()
-        if (neighbours.isEmpty()) return
+        if (neighbours.isEmpty()) {
+            return
+        }
+        currentPosition = chooseNext(neighbours)
+    }
+
+    private fun chooseNext(neighbours : List<Coord>) : Coord {
         (neighbours.indices).forEach { i ->
             neighbours[i].d = min(neighbours[i].d, this.getCoord(currentPosition).d+1)
             walkingLog.setAsSeen(neighbours[i])
         }
 
-        currentPosition = neighbours.minBy { it.d }
-//        println(this)
-//        println("==================================================")
+        return neighbours.minBy { it.d }
     }
 
+    fun inverseDijkstra() : Int {
 
-    fun startDjikstra() : Int {
-        while (!walkingLog.isAlreadySeen(target)) {
-            djikstra()
+        grid.flatten().forEach { it.d = Int.MAX_VALUE }
+        grid[target.y][target.x].d = 0
+        currentPosition = grid[target.y][target.x]
+
+        walkingLog.alreadySeen.clear()
+        walkingLog.setAsSeen(grid[currentPosition.y][currentPosition.x])
+
+        var goOn = true
+        while (goOn) {
+            goOn = dijkstraInverse()
         }
-//        println(printDistanceHeatMap())
-//        println("Il target ha una distanza di ${grid[target.y][target.x].d} passi dall'inizio")
-        return grid[target.y][target.x].d
+
+        val lowestNearestSquareFromTarget = grid.flatten().filter { it.h == 0 }.minByOrNull { it.d }!!
+
+        return lowestNearestSquareFromTarget.d
     }
 
-    fun printDistanceHeatMap() : String {
-        return grid.map {
-            it.map { coord -> val padding = 4
-                "${if (coord.d != Int.MAX_VALUE) (coord.d).toString().padStart(padding) else "∞".padStart(padding)} " }.joinToString("")
-        }.joinToString("\n")
+    private fun dijkstraInverse() : Boolean {
+        val neighbours = walkingLog.alreadySeen.map { it.getNeighboursInverse(this) }.flatten()
+        if (neighbours.isEmpty()) {
+            return false
+        }
+
+        currentPosition = chooseNextInverse(neighbours)
+
+        return true
+    }
+
+    private fun chooseNextInverse(neighbours : List<Coord>) : Coord {
+        (neighbours.indices).forEach { i ->
+            neighbours[i].d = min(neighbours[i].d, this.getCoord(currentPosition).d+1)
+            walkingLog.setAsSeen(neighbours[i])
+        }
+
+        return neighbours.minBy { it.d }
+    }
+
+    fun alreadyBeenThere(coord: Coord, direction: WalkDirection) : Boolean {
+        return walkingLog.isAlreadySeen(coord.walk(direction, this))
     }
 
     private fun printPixelMap(coord: Coord) : String {
         return when {
             coord.isAt(currentPosition) -> "§"
             coord.isAt(target) -> "^"
-            walkingLog.isCoordInLogAndIsNotLast(coord) -> walkingLog.printCoord(coord)
             walkingLog.isAlreadySeen(coord) -> "."
             else -> valueCharMap[coord.h]?.toString() ?: "#"
         }
@@ -70,15 +104,14 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
     override fun toString(): String {
 
         return grid.map {
-            it.map { coord -> printPixelMap(coord) }.joinToString("")
+            it.joinToString("") { coord -> printPixelMap(coord) }
         }.joinToString("\n")
 
     }
 
     companion object {
 
-
-        fun from(rows : List<String>) : HeatMap {
+        fun create(rows : List<String>) : HeatMap {
 
             val width : Int = rows[0].length
             val height : Int = rows.size
@@ -94,8 +127,8 @@ class HeatMap(private val grid: List<List<Coord>>, val target: Coord, startPos: 
                 }.toList()
             }.toList()
 
-            val target = Coord(posE % width, posE / width, charValueMap['z']!!)
             val start = Coord(posStart % width, posStart / width, charValueMap['a']!!)
+            val target = Coord(posE % width, posE / width, charValueMap['z']!!)
             return HeatMap(coords, target, start)
 
         }
