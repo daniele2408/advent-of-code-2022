@@ -3,6 +3,7 @@ import solutions.day10cathodraytube.sumSignals
 import solutions.day11monkeyinthemiddle.levelOfMonkeyBusinessAfterNRounds
 import solutions.day11monkeyinthemiddle.levelOfMonkeyBusinessAfterNRoundsHighStress
 import solutions.day12hillclimbingalgorithm.fewestStepRequiredFromNearestLowestPoint
+import solutions.day13distresssignal.sumOfIndicesOfRightOrderedPairs
 import solutions.day1caloriecounting.getCaloriesTopNElves
 import solutions.day2rockpaperscissor.computeTotalScore
 import solutions.day2rockpaperscissor.computeTotalScore2
@@ -71,4 +72,6 @@ fun main(args: Array<String>) {
     println("Fewest step required to move from current position to the location is $shortestPath1")
     println("Fewest step required to move from lowest nearest position to the location is $shortestPath2")
 
+    println("############## DAY 13 ##############")
+    println("The sum of the indices of pairs in right order is ${sumOfIndicesOfRightOrderedPairs()}")
 }

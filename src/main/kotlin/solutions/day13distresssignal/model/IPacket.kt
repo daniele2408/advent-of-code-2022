@@ -1,6 +1,6 @@
 package solutions.day13distresssignal.model
 
-interface IPacket {
+sealed interface IPacket {
     var elements : List<IPacket>
     val internalValue : Int
 
@@ -10,10 +10,6 @@ interface IPacket {
 
     fun asSeq() : Sequence<IPacket> {
         return elements.asSequence()
-    }
-
-    fun flatten() : List<IPacket> {
-        return elements.map { it.elements }.flatten()
     }
 
     fun addElement(packet: IPacket) {
@@ -29,7 +25,7 @@ interface IPacket {
         else elements[idx]
     }
 
-    fun compare(other: IPacket) : Boolean
+    fun compare(other: IPacket) : CompareResult
 
     operator fun plus(other: IPacket): IPacket {
         return when {

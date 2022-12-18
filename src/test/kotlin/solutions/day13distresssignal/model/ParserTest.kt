@@ -113,23 +113,23 @@ class ParserTest {
         val packetA = Packet.createPacket("[1,1,3,1,1]")
         val packetB = Packet.createPacket("[1,1,5,1,1]")
 
-        assertTrue(packetA.compare(packetB))
+        assertEquals(CompareResult.LESS, packetA.compare(packetB))
 
         val packetC = Packet.createPacket("[1,[2,[3,[4,[5,6,7]]]],8,9]")
         val packetD = Packet.createPacket("[1,[2,[3,[4,[5,6,0]]]],8,9]")
 
-        assertFalse(packetC.compare(packetD))
+        assertEquals(CompareResult.MORE, packetC.compare(packetD))
 
         val packetE = Packet.createPacket("[7,7,7,7]")
         val packetF = Packet.createPacket("[7,7,7]")
 
-        assertFalse(packetE.compare(packetF))
+        assertEquals(CompareResult.MORE, packetE.compare(packetF))
 
         val packetG = Packet.createPacket("[[[]]]")
         val packetH = Packet.createPacket("[[]]")
 
-        assertFalse(packetG.compare(packetH))
-        assertTrue(packetH.compare(packetG))
+        assertEquals(CompareResult.MORE, packetG.compare(packetH))
+        assertEquals(CompareResult.LESS, packetH.compare(packetG))
 
     }
 
@@ -139,18 +139,18 @@ class ParserTest {
         val packetA = Parser.parse("[1,1,3,1,1]")
         val packetB = Parser.parse("[1,1,5,1,1]")
 
-        assertTrue(packetA.compare(packetB))
+        assertEquals(CompareResult.LESS, packetA.compare(packetB))
 
         val packetE = Parser.parse("[7,7,7,7]")
         val packetF = Parser.parse("[7,7,7]")
 
-        assertFalse(packetE.compare(packetF))
+        assertEquals(CompareResult.MORE, packetE.compare(packetF))
 
         val packetG = Parser.parse("[[[]]]")
         val packetH = Parser.parse("[[]]")
 
-        assertFalse(packetG.compare(packetH))
-        assertTrue(packetH.compare(packetG))
+        assertEquals(CompareResult.MORE, packetG.compare(packetH))
+        assertEquals(CompareResult.LESS, packetH.compare(packetG))
     }
 
 
@@ -158,11 +158,11 @@ class ParserTest {
     fun testCompareParser2() {
 
         mapOf(
-            ("[1,1,3,1,1]" to "[1,1,5,1,1]") to true,
-            ("[7,7,7,7]" to "[7,7,7]") to false,
-            ("[[1],[2,3,4]]" to "[[1],4]") to true,
-            ("[1,[2,[3,[4,[5,6,7]]]],8,9]" to "[1,[2,[3,[4,[5,6,0]]]],8,9]") to false,
-            ("[[[]]]" to "[[]]") to false
+            ("[1,1,3,1,1]" to "[1,1,5,1,1]") to CompareResult.LESS,
+            ("[7,7,7,7]" to "[7,7,7]") to CompareResult.MORE,
+            ("[[1],[2,3,4]]" to "[[1],4]") to CompareResult.LESS,
+            ("[1,[2,[3,[4,[5,6,7]]]],8,9]" to "[1,[2,[3,[4,[5,6,0]]]],8,9]") to CompareResult.MORE,
+            ("[[[]]]" to "[[]]") to CompareResult.MORE
         ).forEach { (t, u) ->
             assertEquals(u, Parser.parse(t.first).compare(Parser.parse(t.second)), "Wrong result for pair $t")
         }
@@ -175,7 +175,27 @@ class ParserTest {
         val packetC = Parser.parse("[9]")
         val packetD = Parser.parse("[[8,7,6]]")
 
-        assertFalse(packetC.compare(packetD))
+        assertEquals(CompareResult.MORE, packetC.compare(packetD))
+
+    }
+
+    @Test
+    fun testCompareParser4() {
+
+        val packetC = Parser.parse("[[1],[2,3,4]]")
+        val packetD = Parser.parse("[[1],4]")
+
+        assertEquals(CompareResult.LESS, packetC.compare(packetD))
+
+    }
+
+    @Test
+    fun testCompareParser5() {
+
+        val packetC = Parser.parse("[[4,4],4,4]")
+        val packetD = Parser.parse("[[4,4],4,4,4]")
+
+        assertEquals(CompareResult.LESS, packetC.compare(packetD))
 
     }
 
@@ -186,6 +206,19 @@ class ParserTest {
         val ppList = rows.windowed(3, step = 3).map { (a, b, _) -> PacketPair.parseFrom(listOf(a, b).joinToString("\n")) }
 
         val packetPairContainer = PacketPairContainer(ppList)
+
+        val res = packetPairContainer.selectIndexesRightOrderPairs().sum()
+
+        assertEquals(13, res)
+    }
+
+    @Test
+    fun testPart1() {
+        val rows = retrieveRowsFromFile("inputday13.txt")
+
+        val pairList = rows.windowed(3, step = 3).map { (a, b, _) -> PacketPair.parseFrom(listOf(a, b).joinToString("\n")) }
+
+        val packetPairContainer = PacketPairContainer(pairList)
 
         val res = packetPairContainer.selectIndexesRightOrderPairs().sum()
 

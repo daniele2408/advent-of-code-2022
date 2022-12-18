@@ -4,17 +4,14 @@ open class Packet(override var elements: List<IPacket>) : IPacket {
 
     override val internalValue : Int = -1
 
-
-
-    override fun compare(other: IPacket): Boolean {
+    override fun compare(other: IPacket): CompareResult {
         return when (other) {
             is SingleValuePacket -> isRightOrder(Packet(listOf(other)))
             else -> isRightOrder(other as Packet)
         }
     }
 
-    private fun isRightOrder(other: Packet) : Boolean {
-//        println("Comparing $this vs $other")
+    private fun isRightOrder(other: Packet) : CompareResult {
 
         val maxLen = maxOf(this.size(), other.size())
 
@@ -22,29 +19,16 @@ open class Packet(override var elements: List<IPacket>) : IPacket {
             val thisEl = this.getElementOpt(i)
             val otherEl = other.getElementOpt(i)
 
-            if (thisEl == null) return true
-            if (otherEl == null) return false
+            if (thisEl == null) return CompareResult.LESS
+            if (otherEl == null) return CompareResult.MORE
 
-            if (this.getElement(i).compare(other.getElement(i))) return true
+            val compareResult = this.getElement(i).compare(other.getElement(i))
+            if (compareResult != CompareResult.SAME) {
+                return compareResult
+            }
         }
 
-        return false
-    }
-
-    private fun isRightOrderOld(other: Packet) : Boolean {
-//        println("Comparing $this vs $other")
-        val zippedSeq: Sequence<Pair<IPacket, IPacket>> = this.asSeq() zip other.asSeq()
-        val seqFilterSameValues = zippedSeq.filter { (a, b) -> a.internalValue != b.internalValue }.toList()
-        if (seqFilterSameValues.isEmpty()) return true
-        val firstPairNonEqual = seqFilterSameValues.first()
-        val allRightOrders = firstPairNonEqual.first.internalValue < firstPairNonEqual.second.internalValue
-        val res = if (!allRightOrders) false
-        else {
-            if (this.size() == other.size()) true
-            else this.size() < other.size()
-        }
-//        println("Comparing $this vs $other ${if (res) "are" else "are not"} in the right order")
-        return res
+        return CompareResult.SAME
     }
 
     override fun toString(): String {
@@ -98,7 +82,7 @@ open class Packet(override var elements: List<IPacket>) : IPacket {
         fun from(valuesBefore : List<Int>, middleBracket : String, valuesAfter : List<Int> ) : Packet {
 
             val listBefore = valuesBefore.map { SingleValuePacket(it) }
-            val middlePacket = Packet.createPacket(middleBracket)
+            val middlePacket = createPacket(middleBracket)
             val listAfter = valuesAfter.map { SingleValuePacket(it) }
 
             return Packet(listBefore + middlePacket + listAfter)
