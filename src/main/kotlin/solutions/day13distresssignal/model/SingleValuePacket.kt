@@ -1,12 +1,18 @@
 package solutions.day13distresssignal.model
 
 class SingleValuePacket(override val internalValue : Int) : IPacket {
-    override val elements : MutableList<IPacket> = mutableListOf()
+    override var elements : List<IPacket> = mutableListOf()
 
-    override fun isRightOrder(other: IPacket): Boolean {
+
+
+    override fun compare(other: IPacket): Boolean {
         return when {
-            other is Packet -> Packet(listOf(this)).isRightOrder(other)
-            else -> internalValue <= (other as SingleValuePacket).internalValue
+            other is Packet -> Packet(listOf(this)).compare(other)
+            else -> internalValue < (other as SingleValuePacket).internalValue
         }
+    }
+
+    override fun toString(): String {
+        return "[$internalValue]"
     }
 }

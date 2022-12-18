@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions.*
 import retrieveRowsFromFile
 import solutions.day13distresssignal.logic.Parser
 import kotlin.test.Test
-import kotlin.test.fail
 
 class ParserTest {
 
@@ -27,7 +26,8 @@ class ParserTest {
 
     @Test
     fun testExtract() {
-        val res = Packet.createPacket("[[4,4],4,4]")
+        val message = "[[4,4],4,4]"
+        val (res, _) = Parser.parseString(EmptyPacket(), message)
 
         assertTrue(res.getElement(0) is Packet)
         assertTrue(res.getElement(0).getElement(0) is SingleValuePacket)
@@ -40,7 +40,8 @@ class ParserTest {
 
     @Test
     fun testExtract2() {
-        val res = Packet.createPacket("[7,7,7,7]")
+        val message = "[7,7,7,7]"
+        val (res, _) = Parser.parseString(EmptyPacket(), message)
 
         res.asSeq().all { it is SingleValuePacket && it.internalValue == 7 }
 
@@ -63,24 +64,47 @@ class ParserTest {
     }
 
     @Test
-    fun testExtract4() {
-        val res = Packet.createPacket("[[1],[2,3,4]]")
+    fun testExtract3Bis() {
+        val (res, _) = Parser.parseString(EmptyPacket(), "[1,[2,[3,[4,[5,6,7]]]],8,9]")
+
+        assertEquals(4, res.asSeq().count())
+        assertTrue(res.getElement(0) is SingleValuePacket)
+        assertTrue(res.getElement(1) is Packet)
+        assertTrue(res.getElement(2) is SingleValuePacket)
+        assertTrue(res.getElement(3) is SingleValuePacket)
+        assertEquals(2, res.getElement(1).asSeq().count())
+        assertEquals(2, res.getElement(1).getElement(1).asSeq().count())
+        assertEquals(2, res.getElement(1).getElement(1).getElement(1).asSeq().count())
+        assertEquals(3, res.getElement(1).getElement(1).getElement(1).getElement(1).asSeq().count())
+
+    }
+
+    @Test
+    fun testExtract4Bis() {
+        val message = "[[1],[2,3,4]]"
+        val (res, _) = Parser.parseString(EmptyPacket(), message)
 
         assertEquals(2, res.asSeq().count())
         assertTrue(res.getElement(0) is Packet)
         assertTrue(res.getElement(1) is Packet)
         assertEquals(3, res.getElement(1).asSeq().count())
 
-
     }
-
 
     @Test
     fun testExtractEmpty() {
-        val packet = Packet.createPacket("[[[]]]")
+        val message = "[[[]]]"
+        val packet = Packet.createPacket(message)
 
-        assertEquals(0, packet.size())
-        assertTrue(packet is EmptyPacket)
+        assertEquals(3, packet.size())
+    }
+
+    @Test
+    fun testExtractEmpty2() {
+        val message = "[[[]]]"
+        val packet = Parser.parse(message)
+
+        assertEquals(1, packet.size())
     }
 
     @Test
@@ -89,23 +113,69 @@ class ParserTest {
         val packetA = Packet.createPacket("[1,1,3,1,1]")
         val packetB = Packet.createPacket("[1,1,5,1,1]")
 
-        assertTrue(packetA.isRightOrder(packetB))
+        assertTrue(packetA.compare(packetB))
 
         val packetC = Packet.createPacket("[1,[2,[3,[4,[5,6,7]]]],8,9]")
         val packetD = Packet.createPacket("[1,[2,[3,[4,[5,6,0]]]],8,9]")
 
-        assertFalse(packetC.isRightOrder(packetD))
+        assertFalse(packetC.compare(packetD))
 
         val packetE = Packet.createPacket("[7,7,7,7]")
         val packetF = Packet.createPacket("[7,7,7]")
 
-        assertFalse(packetE.isRightOrder(packetF))
+        assertFalse(packetE.compare(packetF))
 
         val packetG = Packet.createPacket("[[[]]]")
         val packetH = Packet.createPacket("[[]]")
 
-        assertFalse(packetG.isRightOrder(packetH))
-        assertTrue(packetH.isRightOrder(packetG))
+        assertFalse(packetG.compare(packetH))
+        assertTrue(packetH.compare(packetG))
+
+    }
+
+    @Test
+    fun testCompareParser() {
+
+        val packetA = Parser.parse("[1,1,3,1,1]")
+        val packetB = Parser.parse("[1,1,5,1,1]")
+
+        assertTrue(packetA.compare(packetB))
+
+        val packetE = Parser.parse("[7,7,7,7]")
+        val packetF = Parser.parse("[7,7,7]")
+
+        assertFalse(packetE.compare(packetF))
+
+        val packetG = Parser.parse("[[[]]]")
+        val packetH = Parser.parse("[[]]")
+
+        assertFalse(packetG.compare(packetH))
+        assertTrue(packetH.compare(packetG))
+    }
+
+
+    @Test
+    fun testCompareParser2() {
+
+        mapOf(
+            ("[1,1,3,1,1]" to "[1,1,5,1,1]") to true,
+            ("[7,7,7,7]" to "[7,7,7]") to false,
+            ("[[1],[2,3,4]]" to "[[1],4]") to true,
+            ("[1,[2,[3,[4,[5,6,7]]]],8,9]" to "[1,[2,[3,[4,[5,6,0]]]],8,9]") to false,
+            ("[[[]]]" to "[[]]") to false
+        ).forEach { (t, u) ->
+            assertEquals(u, Parser.parse(t.first).compare(Parser.parse(t.second)), "Wrong result for pair $t")
+        }
+
+    }
+
+    @Test
+    fun testCompareParser3() {
+
+        val packetC = Parser.parse("[9]")
+        val packetD = Parser.parse("[[8,7,6]]")
+
+        assertFalse(packetC.compare(packetD))
 
     }
 
@@ -113,7 +183,7 @@ class ParserTest {
     fun testSamplePart1() {
         val rows = retrieveRowsFromFile("inputday13sample.txt")
 
-        val ppList = rows.windowed(3, step = 3).map { (a, b, _) -> PacketPair.from(listOf(a, b).joinToString("\n")) }
+        val ppList = rows.windowed(3, step = 3).map { (a, b, _) -> PacketPair.parseFrom(listOf(a, b).joinToString("\n")) }
 
         val packetPairContainer = PacketPairContainer(ppList)
 
@@ -121,4 +191,5 @@ class ParserTest {
 
         assertEquals(13, res)
     }
+
 }

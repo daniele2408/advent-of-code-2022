@@ -1,16 +1,12 @@
 package solutions.day13distresssignal.model
 
-import javax.swing.plaf.metal.OceanTheme
-
-open class Packet(override val elements: List<IPacket>) : IPacket {
+open class Packet(override var elements: List<IPacket>) : IPacket {
 
     override val internalValue : Int = -1
 
-    fun size() : Int {
-        return elements.size
-    }
 
-    override fun isRightOrder(other: IPacket): Boolean {
+
+    override fun compare(other: IPacket): Boolean {
         return when (other) {
             is SingleValuePacket -> isRightOrder(Packet(listOf(other)))
             else -> isRightOrder(other as Packet)
@@ -18,13 +14,41 @@ open class Packet(override val elements: List<IPacket>) : IPacket {
     }
 
     private fun isRightOrder(other: Packet) : Boolean {
+//        println("Comparing $this vs $other")
+
+        val maxLen = maxOf(this.size(), other.size())
+
+        for (i in (0 until maxLen)) {
+            val thisEl = this.getElementOpt(i)
+            val otherEl = other.getElementOpt(i)
+
+            if (thisEl == null) return true
+            if (otherEl == null) return false
+
+            if (this.getElement(i).compare(other.getElement(i))) return true
+        }
+
+        return false
+    }
+
+    private fun isRightOrderOld(other: Packet) : Boolean {
+//        println("Comparing $this vs $other")
         val zippedSeq: Sequence<Pair<IPacket, IPacket>> = this.asSeq() zip other.asSeq()
-        val allRightOrders = zippedSeq.all { (a, b) -> a.isRightOrder(b) }
-        return if (!allRightOrders) false
+        val seqFilterSameValues = zippedSeq.filter { (a, b) -> a.internalValue != b.internalValue }.toList()
+        if (seqFilterSameValues.isEmpty()) return true
+        val firstPairNonEqual = seqFilterSameValues.first()
+        val allRightOrders = firstPairNonEqual.first.internalValue < firstPairNonEqual.second.internalValue
+        val res = if (!allRightOrders) false
         else {
-            return if (this.size() == other.size()) true
+            if (this.size() == other.size()) true
             else this.size() < other.size()
         }
+//        println("Comparing $this vs $other ${if (res) "are" else "are not"} in the right order")
+        return res
+    }
+
+    override fun toString(): String {
+        return "Packet(${elements.map { it }.joinToString(", ")})"
     }
 
     companion object {
@@ -32,14 +56,23 @@ open class Packet(override val elements: List<IPacket>) : IPacket {
 
         fun createPacket(s : String) : Packet {
 
-            if (!s.contains(',')) return Packet((0 until s.count { it == '[' }).map { _ -> EmptyPacket() }.toList())
+            if (!s.contains(',')) {
+                if (s.all { it.isDigit() }) {
+                    return Packet(listOf(SingleValuePacket(s.toInt())))
+                }
+                return Packet((0 until s.count { it == '[' }).map { _ -> EmptyPacket() }.toList())
+            }
 
             val trimmedS = s.removePrefix("[").removeSuffix("]")
 
             val posFirstOpenBracket = trimmedS.indexOfFirst { it == '[' }
             val posLastClosedBracket = trimmedS.indexOfLast { it == ']' }
 
-            if (posFirstOpenBracket == -1) return Packet(trimmedS.split(',').map {  SingleValuePacket(it.toInt()) })
+
+
+            if (posFirstOpenBracket == -1) return Packet(trimmedS.split(',')
+                .filter { it.isNotBlank() }
+                .map {  SingleValuePacket(it.toInt()) })
 
             val valuesBeforeBracket : List<Int> = trimmedS
                 .substring(0, posFirstOpenBracket).split(',')
@@ -73,5 +106,7 @@ open class Packet(override val elements: List<IPacket>) : IPacket {
         }
 
     }
+
+
 
 }
