@@ -2,6 +2,8 @@ package solutions.day13distresssignal.model
 
 open class Packet(override var elements: List<IPacket>) : IPacket {
 
+    constructor(singleValuePacket: SingleValuePacket) : this(listOf(singleValuePacket))
+
     override val internalValue : Int = -1
 
     override fun compare(other: IPacket): CompareResult {

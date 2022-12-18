@@ -1,6 +1,7 @@
 package solutions.day13distresssignal.model
 
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import retrieveRowsFromFile
 import solutions.day13distresssignal.logic.Parser
 import kotlin.test.Test
@@ -203,9 +204,9 @@ class ParserTest {
     fun testSamplePart1() {
         val rows = retrieveRowsFromFile("inputday13sample.txt")
 
-        val ppList = rows.windowed(3, step = 3).map { (a, b, _) -> PacketPair.parseFrom(listOf(a, b).joinToString("\n")) }
+        val packetPairsList = rows.windowed(3, step = 3).map { (a, b, _) -> PacketPair.parseFrom(listOf(a, b).joinToString("\n")) }
 
-        val packetPairContainer = PacketPairContainer(ppList)
+        val packetPairContainer = PacketPairContainer(packetPairsList)
 
         val res = packetPairContainer.selectIndexesRightOrderPairs().sum()
 
@@ -213,16 +214,20 @@ class ParserTest {
     }
 
     @Test
-    fun testPart1() {
-        val rows = retrieveRowsFromFile("inputday13.txt")
+    fun testSamplePart2() {
+        val rows = retrieveRowsFromFile("inputday13sample.txt")
 
-        val pairList = rows.windowed(3, step = 3).map { (a, b, _) -> PacketPair.parseFrom(listOf(a, b).joinToString("\n")) }
+        val packetPairsList = rows.filter { it.isNotBlank() }.map { Parser.parse(it) }
 
-        val packetPairContainer = PacketPairContainer(pairList)
+        val firstDividerPacket = Packet(SingleValuePacket(2))
+        val secondDividerPacket = Packet(SingleValuePacket(6))
 
-        val res = packetPairContainer.selectIndexesRightOrderPairs().sum()
+        val sortedPackets = (listOf(firstDividerPacket, secondDividerPacket) + packetPairsList).sortedWith { o1, o2 -> o1.compare(o2).value }
 
-        assertEquals(13, res)
+        val indexOfFirstDivider = sortedPackets.indexOf(firstDividerPacket)+1
+        val indexOfSecondDivider = sortedPackets.indexOf(secondDividerPacket)+1
+
+        assertEquals(140, indexOfFirstDivider * indexOfSecondDivider)
     }
 
 }
