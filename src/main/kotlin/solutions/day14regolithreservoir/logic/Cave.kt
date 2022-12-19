@@ -17,7 +17,6 @@ class Cave(private val grid : MutableList<MutableList<Coordinate>>) {
     }
 
     fun startPouring() {
-        // todo va in loop infinito anche perché non si accorge che è arrivato alla fonte, rimedia
         while (outOfBoundCoordinate.fill == FillType.VOID) {
             pour()
         }
