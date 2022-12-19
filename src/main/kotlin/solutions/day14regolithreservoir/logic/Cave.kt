@@ -9,8 +9,6 @@ import kotlin.math.min
 
 class Cave(private val grid : MutableList<MutableList<Coordinate>>) {
 
-    val width: Int = grid[0].size
-    val height: Int = grid.size
     private val offsetX: Int = grid.flatten().map { it.x }.min()
     private val outOfBoundCoordinate: Coordinate = Coordinate(-1, -1, FillType.VOID)
 
@@ -26,11 +24,16 @@ class Cave(private val grid : MutableList<MutableList<Coordinate>>) {
         println(this)
     }
 
-    fun pour() {
+    private fun pour() {
+
+        if (getSandSourceCoordinate().fill == FillType.SAND) {
+            outOfBoundCoordinate.fill = FillType.AIR
+            return
+        }
 
         setCoordinate(Coordinate(sandPouringFrom.x, sandPouringFrom.y, FillType.SAND))
 
-        var sandGrain = getNextTo(sandPouringFrom, Direction.DOWN)
+        var sandGrain = getSandSourceCoordinate()
 
         sandGrain.fill = FillType.SAND
         var stop = false
@@ -45,9 +48,11 @@ class Cave(private val grid : MutableList<MutableList<Coordinate>>) {
             } else {
                 sandGrain = newPos
             }
-            println(this)
-
         }
+    }
+
+    private fun getSandSourceCoordinate(): Coordinate {
+        return grid[sandPouringFrom.y][sandPouringFrom.x-offsetX]
     }
 
     private fun setCoordinate(coordinate: Coordinate) {
@@ -186,7 +191,7 @@ class Cave(private val grid : MutableList<MutableList<Coordinate>>) {
         }
 
         private fun createStringFloor(maxY: Int): String {
-            return "${sandPouringFrom.x - (maxY+1)},${maxY + 2} -> ${sandPouringFrom.x + (maxY)},${maxY + 2}"
+            return "${sandPouringFrom.x - (maxY+10)},${maxY + 2} -> ${sandPouringFrom.x + (maxY+10)},${maxY + 2}"
         }
 
     }

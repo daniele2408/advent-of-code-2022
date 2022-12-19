@@ -13,3 +13,14 @@ fun howMuchSandResting() : Int {
 
     return cave.countGrainsOfSand()
 }
+
+fun howMuchSandRestingHavingFloor() : Int {
+
+    val rows = retrieveRowsFromFile("inputday14.txt")
+
+    val cave = Cave.initWithFloor(rows)
+
+    cave.startPouring()
+
+    return cave.countGrainsOfSand()
+}
