@@ -8,53 +8,10 @@ class Parser {
 
     companion object {
 
-        fun extractInternalBracketsContent(s : String) : String {
-            if (!s.contains('[')) return ""
-
-            val posLastOpenBracket = s.indexOfLast { it == '[' }
-            val posFirstClosedBracket = s.indexOfFirst { it == ']' }
-
-            s.split(',')
-
-            return s.substring(posLastOpenBracket+1, posFirstClosedBracket)
-        }
-
-        fun parseLastInternalBrackets(s : String) : String {
-            return Regex("\\[(([0-9]+,)+(''|[0-9]+))\\]").find(s)?.value ?: "[]"
-        }
-
         fun parse(message: String): IPacket {
             val (iPacket, _) = parseString(EmptyPacket(), message)
             return iPacket
         }
-
-        fun compareStrings(stringA: String, stringB: String) : Boolean {
-
-            if (containsDigit(stringA) && containsDigit(stringB)) {
-                val listA = extractInts(stringA)
-                val listB = extractInts(stringB)
-
-                val res = (listA zip listB).takeWhile { (a, b) -> a <= b }
-
-                if (res.isEmpty()) return false
-                if (res[0].first < res[0].second) return true
-
-                return listA.size < listB.size
-            }
-
-            val listA = if (containsDigit(stringA)) extractInts(stringA) else (0 until stringA.count { it == '[' }).map { _ -> -1 }.toList()
-            val listB = if (containsDigit(stringB)) extractInts(stringB) else (0 until stringB.count { it == '[' }).map { _ -> -1 }.toList()
-
-            return listA.size < listB.size
-
-        }
-
-        private fun containsDigit(s: String): Boolean {
-            return s.any{ it.isDigit() }
-        }
-
-        private fun extractInts(stringA: String) =
-            stringA.filter { !(it == '[' || it == ']') }.map { it }.joinToString("").split(',').map { it.toInt() }
 
         fun parseString(acc: IPacket, message: String) : Pair<IPacket, String> {
 

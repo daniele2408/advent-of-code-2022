@@ -9,23 +9,6 @@ import kotlin.test.Test
 class ParserTest {
 
     @Test
-    fun testParse() {
-
-        val inputOutput : Map<String, String> = mapOf(
-            "[1,[2,[3,[4,[5,6,7]]]],8,9]" to "[5,6,7]",
-            "[[4,4],4,4]" to "[4,4]",
-            "[]" to "[]",
-            "[7,7,7,7]" to "[7,7,7,7]",
-            "[[1],[2,3,4]]" to "[2,3,4]"
-        )
-
-        inputOutput.entries.forEach { (k,v) ->
-            assertEquals(v,  Parser.parseLastInternalBrackets(k))
-        }
-
-    }
-
-    @Test
     fun testExtract() {
         val message = "[[4,4],4,4]"
         val (res, _) = Parser.parseString(EmptyPacket(), message)
