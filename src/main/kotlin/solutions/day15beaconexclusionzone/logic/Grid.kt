@@ -5,7 +5,7 @@ import solutions.day15beaconexclusionzone.model.CoordinateType
 import solutions.day15beaconexclusionzone.model.GridCanva
 import solutions.day15beaconexclusionzone.model.SensorBeaconPair
 
-class Grid(val sbPairs: List<SensorBeaconPair>, val gridCanva: GridCanva) {
+class Grid(val sbPairs: List<SensorBeaconPair>, val gridCanva: GridCanva, val leftMostX: Int, val rightMostX: Int) {
 
     fun isCoordinateInSensorRange(coordinate: Coordinate): Boolean {
         val res = sbPairs.any { distance(it.sensor, coordinate) <= it.d }
@@ -21,7 +21,7 @@ class Grid(val sbPairs: List<SensorBeaconPair>, val gridCanva: GridCanva) {
     }
 
     fun checkSurelyEmptyCoordForY(y: Int) : Int {
-        return (gridCanva.minX..gridCanva.maxX).map { x -> Coordinate(x, y, CoordinateType.VOID) }
+        return (leftMostX..rightMostX).map { x -> Coordinate(x, y, CoordinateType.VOID) }
             .count { !isCoordinateBeacon(it) && !isCoordinateSensor(it) && isCoordinateInSensorRange(it) }
     }
 
@@ -33,17 +33,14 @@ class Grid(val sbPairs: List<SensorBeaconPair>, val gridCanva: GridCanva) {
             val minY: Int = sbPairs.minOf { it.getMinY() }
             val maxX: Int = sbPairs.maxOf { it.getMaxX() }
             val maxY: Int = sbPairs.maxOf { it.getMaxY() }
-//
-//            val offsetX: Int = max(0, 0 - minX)
-//            val offsetY: Int = max(0, 0 - minY)
-//
-//            val grid = (offsetY+minY..offsetY+maxY).map { j -> (offsetX+minX..offsetX+maxX+1).map { i -> Coordinate(i, j, CoordinateType.VOID) }.toMutableList() }.toMutableList()
 
-//            specialCoordinates.forEach { coord ->
-//                grid[offsetY + coord.y][offsetX + coord.x] = coord
-//            }
+            val leftMostPair: SensorBeaconPair = sbPairs.minBy { it.sensor.x }
+            val rightMostPair: SensorBeaconPair = sbPairs.maxBy { it.sensor.x }
 
-            return Grid(sbPairs, GridCanva(minX, maxX, minY, maxY))
+            val leftEdge: Int = leftMostPair.sensor.x - leftMostPair.d
+            val rightEdge: Int = rightMostPair.sensor.x + rightMostPair.d
+
+            return Grid(sbPairs, GridCanva(minX, maxX, minY, maxY), leftEdge, rightEdge)
 
         }
 
