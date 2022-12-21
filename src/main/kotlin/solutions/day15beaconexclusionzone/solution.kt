@@ -11,3 +11,12 @@ fun positionExcludingBeacon(y: Int): Int {
     return grid.checkSurelyEmptyCoordForY(y)
 
 }
+
+fun findTuningFrequency(lowerBound: Int, upperBound: Int): Int {
+    val rows = retrieveRowsFromFile("inputday15.txt")
+
+    val grid = Grid.init(rows)
+
+    return grid.findTuningFrequency(lowerBound, upperBound)
+
+}

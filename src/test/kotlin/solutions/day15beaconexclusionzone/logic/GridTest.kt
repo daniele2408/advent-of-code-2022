@@ -38,4 +38,18 @@ class GridTest {
         assertEquals(26, res)
     }
 
+    @Test
+    fun testGridPart2() {
+        val rows = retrieveRowsFromFile("inputday15sample.txt")
+
+        val grid = Grid.init(rows)
+
+        println(grid)
+
+        println(grid.printAllSensorsOneByOne())
+
+        assertEquals(56000011, grid.findTuningFrequency(0, 20))
+    }
+
+
 }

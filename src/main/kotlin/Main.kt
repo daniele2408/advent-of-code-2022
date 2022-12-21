@@ -24,6 +24,7 @@ import solutions.day08treetoptreehouse.countVisibleTrees
 import solutions.day08treetoptreehouse.findBestScenicScore
 import solutions.day09ropebridge.totalPositionRopeTailVisited
 import solutions.day09ropebridge.totalPositionTailVisited
+import solutions.day15beaconexclusionzone.findTuningFrequency
 import solutions.day15beaconexclusionzone.positionExcludingBeacon
 
 fun main(args: Array<String>) {
@@ -86,6 +87,7 @@ fun main(args: Array<String>) {
 
     println("############## DAY 15 ##############")
     val y = 2_000_000
-    println("There are ${positionExcludingBeacon(y)} positions that cannot contain a beacon for y = $y")
+//    println("There are ${positionExcludingBeacon(y)} positions that cannot contain a beacon for y = $y")
+    println("Tuning frequency for lost distress beacon is ${findTuningFrequency(0, 4_000_000)}")
 
 }
