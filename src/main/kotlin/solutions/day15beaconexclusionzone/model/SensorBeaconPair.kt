@@ -8,7 +8,7 @@ data class SensorBeaconPair(val sensor: Coordinate, val beacon: Coordinate) {
 
     val d: Int = distance(sensor, beacon)
 
-    val orthogonalPoints : OrthogonalPoints = OrthogonalPoints(
+    private val externalOrthogonalPoints : OrthogonalPoints = OrthogonalPoints(
             Coordinate(sensor.x, sensor.y-d-1),
             Coordinate(sensor.x+d+1, sensor.y),
             Coordinate(sensor.x, sensor.y+d+1),
@@ -17,12 +17,7 @@ data class SensorBeaconPair(val sensor: Coordinate, val beacon: Coordinate) {
 
 
 
-    val perimeter: Perimeter = Perimeter.init(orthogonalPoints)
-
-    fun isInSensorRange(coordinate: Coordinate): Boolean {
-        return distance(sensor, coordinate) <= d
-    }
-
+    val perimeter: Perimeter = Perimeter.init(externalOrthogonalPoints)
 
     fun getMinX(): Int {
         return min(sensor.x, beacon.x)
@@ -44,13 +39,7 @@ data class SensorBeaconPair(val sensor: Coordinate, val beacon: Coordinate) {
         return "S(${sensor.x.toString().padStart(2)},${sensor.y.toString().padStart(2)})--{$d}-->B(${beacon.x.toString().padStart(2)},${beacon.y.toString().padStart(2)})"
     }
 
-    data class OrthogonalPoints(val n: Coordinate, val e: Coordinate, val s: Coordinate, val w: Coordinate) {
-
-        fun asSet(): Set<Coordinate> {
-            return setOf(n, e, s, w)
-        }
-
-    }
+    data class OrthogonalPoints(val n: Coordinate, val e: Coordinate, val s: Coordinate, val w: Coordinate)
 
     class Perimeter(
         val seqN: Sequence<Coordinate>,

@@ -3,19 +3,29 @@ package solutions.day15beaconexclusionzone.logic
 import solutions.day15beaconexclusionzone.model.Coordinate
 import solutions.day15beaconexclusionzone.model.SensorBeaconPair
 
-class SensorGraph(val sensorEdges: Map<Coordinate, Set<Coordinate>>) {
+class SensorGraph(val sensorEdges: Map<Coordinate, Set<Coordinate>>, val sensorBeaconPairList: List<SensorBeaconPair>) {
 
-    fun getNodesOrderedByNEdges(): List<Coordinate> {
-        return sensorEdges.entries.toList().sortedBy {
-            it.value.size
-        }.map { it.key }
+    private fun getNodesOrderedByDistanceAndNEdges(): List<Coordinate> {
+        return sensorEdges.entries.toList().sortedWith(compareBy<Map.Entry<Coordinate, Set<Coordinate>>> { getDistanceSensorBeaconForSensor(it.key) }.thenByDescending  { it.value.size }).map { it.key }
+    }
+
+    private fun getDistanceSensorBeaconForSensor(sensor: Coordinate) : Int {
+        return sensorBeaconPairList.find { it.sensor == sensor }!!.d
+    }
+
+    private fun getExternalPerimeter(sensor: Coordinate) : Set<Coordinate> {
+        return sensorBeaconPairList.find { it.sensor == sensor }!!.perimeter.coordinates().toSet()
+    }
+
+    fun emitCoordsToExaminate(): Sequence<Set<Coordinate>> {
+        return getNodesOrderedByDistanceAndNEdges().map { getExternalPerimeter(it) }.asSequence()
     }
 
     companion object {
 
         fun init(sensorBeaconPairList: List<SensorBeaconPair>): SensorGraph {
 
-            val associate = sensorBeaconPairList.associateWith { pair ->
+            val associate: List<Pair<SensorBeaconPair, SensorBeaconPair>> = sensorBeaconPairList.associateWith { pair ->
                 sensorBeaconPairList.filter {
                     it != pair && distance(it.sensor, pair.sensor) == (it.d + pair.d + 2)
                 }
@@ -25,16 +35,9 @@ class SensorGraph(val sensorEdges: Map<Coordinate, Set<Coordinate>>) {
                 .map { it.toList().sortedBy { sensor -> sensor.x } }.distinct()
                 .groupBy {
                     it.first()
-                }.mapValues { entry -> entry.value.flatten().toSet() }
+                }.mapValues { entry -> entry.value.flatten().filter { it != entry.key }.toSet() }
 
-//            val sensorEdges: Map<SensorBeaconPair, Set<SensorBeaconPair>> = sensorBeaconPairList.associateWith { pair ->
-//                sensorBeaconPairList.filter {
-//                    it != pair && distance(it.sensor, pair.sensor) == (it.d + pair.d + 2)
-//                }
-//            }.filter { entry -> entry.value.isNotEmpty() }.map { entry -> entry.value.map { v -> entry.key to v } }.flatten()
-//                .map { el -> el.first.sensor to el.second.sensor }.toMap()
-//
-            return SensorGraph(sensorEdges)
+            return SensorGraph(sensorEdges, sensorBeaconPairList)
 
         }
 
